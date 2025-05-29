@@ -1,0 +1,19 @@
+<svg
+  width="16"
+  height="16"
+  viewBox="0 0 16 16"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <text
+    x="8"
+    y="11"
+    fontFamily="'Source Serif 4', Georgia, serif"
+    fontSize="14"
+    fontWeight="bold"
+    fill="#FFD700"
+    textAnchor="middle"
+  >
+    CI
+  </text>
+</svg>

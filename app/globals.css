@@ -1,0 +1,20 @@
+/* app/globals.css */
+@import "tailwindcss";
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+@theme {
+  /* Default theme vars from shadcn/ui v4 */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  /* Add other vars as needed */
+}
+
+@layer base {
+  :root {
+    @apply bg-background text-foreground;
+  }
+}

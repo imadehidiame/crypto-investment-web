@@ -1,0 +1,265 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap');
+@import 'tailwindcss';
+
+
+
+@layer base {
+  :root {
+    --background: 0 0% 3.9%; /* Almost black for main background */
+    --foreground: 0 0% 98%; /* Light color for text */
+
+    --card: 0 0% 6%; /* Slightly lighter black for cards */
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 45 74% 50%; /* Gold */
+    --primary-foreground: 50 80% 5%; /* Dark text on gold buttons */
+
+    --secondary: 0 0% 15%; /* Dark gray for secondary elements */
+    --secondary-foreground: 0 0% 90%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 45 70% 55%; /* A slightly different gold for accents */
+    --accent-foreground: 50 80% 5%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 45 74% 50%; /* Gold for focus rings */
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Keep the same dark theme variables for consistency, or define specific dark mode overrides if needed */
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 95%;
+    /* ... other variables ... */
+  }
+}
+
+
+:root {
+  --dark: #1C2526;
+  --gold: #FFD700;
+  --white: #FFFFFF;
+  --gray: #4B5E61;
+
+  --background: 0 0% 3.9%; /* Almost black for main background */
+    --foreground: 0 0% 98%; /* Light color for text */
+
+    --card: 0 0% 6%; /* Slightly lighter black for cards */
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 45 74% 50%; /* Gold */
+    --primary-foreground: 50 80% 5%; /* Dark text on gold buttons */
+
+    --secondary: 0 0% 15%; /* Dark gray for secondary elements */
+    --secondary-foreground: 0 0% 90%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 45 70% 55%; /* A slightly different gold for accents */
+    --accent-foreground: 50 80% 5%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 45 74% 50%; /* Gold for focus rings */
+
+    --radius: 0.5rem;
+
+
+}
+
+
+
+
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Source Serif 4', Georgia, serif;
+    background-color: var(--dark) !important;
+    color: var(--white) !important;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-weight: 700;
+    color: var(--white) !important;
+  }
+
+  h1 {
+    font-size: 2rem;
+    @media (min-width: 768px) {
+      font-size: 3rem;
+    }
+  }
+
+  h2 {
+    font-size: 1.875rem;
+    @media (min-width: 768px) {
+      font-size: 2.25rem;
+    }
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    @media (min-width: 768px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  a {
+    color: var(--gold);
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+
+  a:hover {
+    color: var(--white);
+  }
+  [id$="-form-item-message"] {
+    color: red !important; 
+  }
+
+  p {
+    color: var(--white);
+    font-weight: 400;
+  }
+
+  
+
+  /* Background and text utilities */
+  .bg-dark {
+    background-color: var(--dark) !important;
+    
+  }
+
+  .text-white {
+    color: var(--white) !important;
+  }
+
+  .text-gold {
+    color: var(--gold) !important;
+  }
+
+  .bg-gold {
+    background-color: var(--gold) !important;
+  }
+
+  .bg-gray {
+    background-color: var(--gray) !important;
+  }
+
+  .border-gold {
+    border-color: var(--gold) !important;
+  }
+
+  /* Gradient for Dribbble-inspired design */
+  .bg-gradient-dark {
+    background: linear-gradient(135deg, #1C2526 0%, #2A3435 100%) !important;
+  }
+
+  /* Button styles */
+  .btn-gold {
+    background-color: var(--gold);
+    color: var(--dark);
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    transition: all 0.3s;
+    transform: scale(1);
+  }
+
+  .btn-gold:hover {
+    transform: scale(1.05);
+    background-color: var(--white);
+    color: var(--dark);
+    box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+  }
+
+  .btn-outline-gold {
+    background-color: transparent;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    transition: all 0.3s;
+    transform: scale(1);
+  }
+
+  .btn-outline-gold:hover {
+    transform: scale(1.05);
+    background-color: var(--gold);
+    color: var(--dark);
+    box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+  }
+
+  .nav-link {
+    color: var(--white);
+    font-weight: 500;
+    transition: color 0.3s, transform 0.3s;
+    transform: scale(1);
+  }
+
+  .nav-link:hover {
+    color: var(--gold);
+    transform: scale(1.05);
+  }
+
+  /* Card styles with elevation and curvy/skewed edges */
+  .card {
+    transition: all 0.3s;
+    transform: scale(1);
+    background: linear-gradient(135deg, #1C2526 0%, #2A3435 100%);
+    border: 1px solid var(--gray);
+    border-radius: 1.5rem 0.5rem 1.5rem 0.5rem; /* Curvy edges */
+    transform: skew(-5deg); /* Skewed effect */
+    padding: 1.5rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Elevated shadow */
+  }
+
+  .card:hover {
+    transform: scale(1.05) skew(-5deg);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .card-content {
+    transform: skew(5deg); /* Counter-skew content to keep text straight */
+  }
+
+  /* Testimonial image */
+  .testimonial-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: none;
+  }
+
+  /* Partners carousel */
+  .partner-image {
+    width: 150px;
+    height: 100px;
+    object-fit: contain;
+    margin: 0 8px;
+  }
+}

@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+  --dark: #1C2526;
+  --gold: #FFD700;
+  --white: #FFFFFF;
+  --gray: #4B5E61;
+}
+
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--dark) !important;
+    color: var(--white) !important;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600; /* Use direct CSS instead of @apply for simplicity */
+    color: var(--white) !important;
+  }
+
+  h1 {
+    font-size: 2rem;
+    @media (min-width: 768px) {
+      font-size: 3rem;
+    }
+  }
+
+  h2 {
+    font-size: 1.875rem;
+    @media (min-width: 768px) {
+      font-size: 2.25rem;
+    }
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    @media (min-width: 768px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  a {
+    color: var(--gold);
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+
+  a:hover {
+    color: var(--white);
+  }
+
+  p {
+    color: var(--white) !important;
+    font-weight: 500;
+  }
+
+  /* Background and text utilities */
+  .bg-dark {
+    background-color: var(--dark) !important;
+  }
+
+  .text-white {
+    color: var(--white) !important;
+  }
+
+  .text-gold {
+    color: var(--gold) !important;
+  }
+
+  .bg-gold {
+    background-color: var(--gold) !important;
+  }
+
+  .bg-gray {
+    background-color: var(--gray) !important;
+  }
+
+  .border-gold {
+    border-color: var(--gold) !important;
+  }
+
+  /* Button styles */
+  .btn-gold {
+    background-color: var(--gold);
+    color: var(--dark);
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    transition: all 0.3s;
+    transform: scale(1);
+  }
+
+  .btn-gold:hover {
+    transform: scale(1.05);
+    background-color: var(--white);
+    color: var(--dark);
+  }
+
+  .btn-outline-gold {
+    background-color: transparent;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    transition: all 0.3s;
+    transform: scale(1);
+  }
+
+  .btn-outline-gold:hover {
+    transform: scale(1.05);
+    background-color: var(--gold);
+    color: var(--dark);
+  }
+
+  .nav-link {
+    color: var(--white);
+    font-weight: 500;
+    transition: color 0.3s, transform 0.3s;
+    transform: scale(1);
+  }
+
+  .nav-link:hover {
+    color: var(--gold);
+    transform: scale(1.05);
+  }
+
+  /* Card styles */
+  .card {
+    transition: all 0.3s;
+    transform: scale(1);
+    background-color: var(--dark);
+    border: 1px solid var(--gray);
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+
+  .card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+}

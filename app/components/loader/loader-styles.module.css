@@ -1,0 +1,46 @@
+.load_bar {
+    /*display: none;*/
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%; /* The full width of the screen */
+    height: 3px;
+    background: linear-gradient(to right, rgb(24, 76, 180), rgb(137, 157, 197)); /* A gradient for visual effect */
+    overflow: hidden; /* Hide the overflowing animation */
+    z-index: 99999999999999999999999999;
+  }
+  
+  .load_bar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -50%; /* Start off-screen */
+    width: 50%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.5); /* A semi-transparent overlay */
+    animation: shimmer 2s linear infinite; /* Apply the animation */
+  }
+  
+  @keyframes shimmer {
+    100% {
+      transform: translateX(200%); /* Move the overlay across the bar */
+    }
+  }
+
+  @keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading_circle {
+    width: 80px;
+    height: 80px;
+    border: 8px solid #cbd5e0; /* Light blue color */
+    border-top: 8px solid #3182ce; /* Darker blue color */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}

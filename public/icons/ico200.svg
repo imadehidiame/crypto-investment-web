@@ -1,0 +1,20 @@
+<svg
+  width="200"
+  height="200"
+  viewBox="0 0 200 200"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  className="w-16 h-16 md:w-24 md:h-24"
+>
+  <text
+    x="100"
+    y="120"
+    fontFamily="'Source Serif 4', Georgia, serif"
+    fontSize="80"
+    fontWeight="bold"
+    fill="#FFD700"
+    textAnchor="middle"
+  >
+    C
+  </text>
+</svg>
