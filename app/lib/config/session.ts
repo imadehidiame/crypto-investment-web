@@ -1,6 +1,8 @@
 import type mongoose from "mongoose";
 
 const sessionEnv = async ()=>{
+    console.log('ENV FOR MG DB');
+    console.log(process.env.MONGO_DB_CONNECTION_STRING)
     const Sessions = {
         secret:process.env.SESSION_SECRET,
         name:process.env.SESSION_NAME,
