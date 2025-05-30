@@ -10,7 +10,7 @@ export const CURRENCIES = {
     eth:'0xF0cac124Bb03f9EFBe308390EF488d98f1007334',
     email:'imadehidiame@gmail.com',
     callback_url:(user_id:string,payment_id:string)=>{
-        return `https://coininvestdesk.com/api/payment-callback/${user_id}/${payment_id}`
+        return `https://cinvdesk.com/api/payment-callback/${user_id}/${payment_id}`
     },
     callback_url_path:(user_id:string,payment_id:string)=>{
         return `/api/payment-callback/${user_id}/${payment_id}`
