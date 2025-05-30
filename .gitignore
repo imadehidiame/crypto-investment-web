@@ -38,6 +38,9 @@ my-middleware.ts
 .DS_Store
 *.pem
 
+documents
+documents.pub
+
 tcon.json
 test
 test.c

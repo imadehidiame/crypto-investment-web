@@ -1,6 +1,6 @@
 import { log } from "@/lib/utils";
 import type { Route } from "./+types/payment-callback";
-import { verify,createVerify,createSign, type KeyLike,type BinaryLike } from "node:crypto";
+//import { verify,createVerify,createSign, type KeyLike,type BinaryLike } from "node:crypto";
 //import PaymentCallback from "@/models/Payment.server";
 import Payment, { type IPayment } from "@/models/Payment.server";
 import { getSess } from "@/layouts/app-layout";
@@ -8,7 +8,8 @@ import Activity from "@/models/Activity.server";
 import Deposit from "@/models/Deposit.server";
 //import { cr } from 'node';
 
-export function validate_cryptapi_signature (data:string,key:string,buffer_signature:Buffer){
+export async function validate_cryptapi_signature (data:string,key:string,buffer_signature:Buffer){
+    const {createVerify} = await import('node:crypto');
     try {
         //const m = createSign('RSA-SHA256')
         //m.sign()
@@ -53,7 +54,7 @@ async function validate_request(request:Request){
     const raw_body = await request.text();
     //const valid = validate_cryptapi_signature(raw_body,signature_base_64!,signature_buffer);
     //return verify_data(raw_body,pub_key,signature_buffer);
-    return validate_cryptapi_signature(raw_body,pub_key,signature_buffer);
+    return await validate_cryptapi_signature(raw_body,pub_key,signature_buffer);
     
     //request.body?.getReader({mode:'byob'}).
 
