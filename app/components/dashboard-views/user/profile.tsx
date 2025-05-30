@@ -1,4 +1,3 @@
-// app/routes/dashboard.profile.tsx
 import React from 'react';
 import { useLoaderData, Form, useActionData, useNavigation } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -47,17 +46,16 @@ const DashboardProfile: React.FC<PageProps> = ({user}) => {
      const navigation = useNavigation();
      const isSubmitting = navigation.state === 'submitting';
 
-     //log(user,'User Data');
+     
 
-   // React Hook Form setup for Profile Update
+   
    const profileForm = useForm<ProfileFormValues>({
      resolver: zodResolver(profileSchema),
      defaultValues: {
        name: user?.name || '',
        email: user?.email || '',
-       // Set default values from fetched user data
+       
      },
-      // Reset form when action is successful for this form type
        resetOptions: {
            keepDirtyValues: true, // Keep user input if validation fails
            keepErrors: true,

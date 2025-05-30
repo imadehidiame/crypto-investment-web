@@ -1,9 +1,10 @@
 import Withdrawals from "@/components/dashboard-views/user/withdrawal";
-import type { Route } from "./+types/dashboard-withdrawal";
+//import type { Route } from "./+types/dashboard-withdrawal";
 //import WithdrawPage from "@/components/dashboard-views/user/withdrawall";
 import { getSess } from "@/layouts/app-layout";
 import Investment from "@/models/Investment.server";
 import { get_earnings, log } from "@/lib/utils";
+import type { Route } from "./+types/dashboard-withdrawal-adm";
 
 const remaining_days = (endDate:Date)=>Math.ceil((endDate.getTime()-Date.now())/(86400*1000));
 
@@ -14,7 +15,7 @@ export const loader = async ({context}:Route.LoaderArgs)=>{
     let investmentss = (await Investment.find({userId:user?.user?._id}).populate('plan','name duration dailyReturn')).map(({_id,plan,startDate,endDate,isWithdrawal,withdrawal,invested,status})=>
        { 
         //log(plan.dailyReturn,'Daiily returns plans');
-        const earnings = get_earnings(startDate as Date,plan.dailyReturn as number,invested as number);
+        const earnings = get_earnings(startDate as Date,plan.dailyReturn as number,invested as number,endDate as Date);
         return {
         _id:_id.toString(),
          plan:plan.name,

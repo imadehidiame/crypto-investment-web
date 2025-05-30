@@ -42,11 +42,11 @@ export default function Withdrawals({withdrawals}:PageProps) {
   const [is_asc,set_is_asc] = useState(true);
   const [filteredWithdrawals,setFilteredWithdrawals] = useState(withdrawals);
   const handleFilterClick = ()=>{
-    console.log('Sorting');
+    
     //setFilteredWithdrawals(prev=>prev.sort((a,b)=>a.plan.lo))
     setFilteredWithdrawals(prev=>prev.sort((a,b)=>( is_asc ? (a.startDate.getTime() - b.startDate.getTime()) : (b.startDate.getTime() - a.startDate.getTime()) )))
     set_is_asc(prev=>!prev);
-    console.log(filteredWithdrawals);
+    
   }
 
   useEffect(()=>{

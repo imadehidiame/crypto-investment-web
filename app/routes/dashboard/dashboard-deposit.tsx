@@ -1,9 +1,4 @@
-import { log } from "@/lib/utils";
-//import type { Route } from "./+types/dashboard-transaction-history";
-//import TransactionHistoryPage from "@/components/dashboard-views/user/transactions";
-//import Activity from "@/models/Activity.server";
 import { getSess } from "@/layouts/app-layout";
-//import { NumberFormat } from "@/components/number-field";
 import DepositPage, { type Deposit } from "@/components/dashboard-views/user/deposit";
 import type { Route } from "./+types/dashboard-deposit";
 import Payment from "@/models/Payment.server";
@@ -23,10 +18,49 @@ import Payment from "@/models/Payment.server";
 export const loader = async ({context}:Route.LoaderArgs) =>{
     const user = getSess(context);
     //let transactions  = await Activity.find({userId:user?.user?._id});
-    let transactions = await Payment.find({ userId: user?.user?._id })
+    let transactionss = await Payment.find({ userId: user?.user?._id })
                                    .select('_id deposit createdAt status updatedAt coin value_coin')
                                    //.sort({ timestamp: -1 })
                                    .lean() as unknown as Deposit[];
+    /*
+     _id: string;
+  deposit: number;
+  createdAt: Date;
+  status: number;
+  updatedAt: Date;
+  coin:string;
+  value_coin:number;
+    */
+    let transactions = await Payment.aggregate<Deposit>([
+      /*{
+        $addFields:{
+          _id:{
+            $toString:'$_id'
+          }
+        }
+      },*/
+      {
+        $match:{
+          userId:user?.user?._id
+        }
+      },
+      {
+        $project:{
+          _id:{
+            $toString:'$_id'
+          },
+            deposit:1,
+            createdAt:1,
+            status:1,
+            updatedAt:1,
+            coin:1,
+            value_coin:1
+          }
+      }
+      
+    ]);
+
+    //log(transactions,'Transactions');
     /*transactions = transactions.filter(e=>e.type.toLocaleLowerCase() === 'deposit').map(({amount,_id,status,date})=>{
         return {id:_id.toString(),date:date.toLocaleDateString(),amount,status};
     })*/

@@ -1,28 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigation, useSubmit, useNavigate } from 'react-router';
+import { useNavigation, useSubmit } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+//import * as z from 'zod';
 import SectionWrapper from '@/components/shared/section-wrapper';
-import { get_form_data, RRFormDynamic } from '@/components/rr-form-mod-test';
 import { Toasting } from '@/components/loader/loading-anime';
-import { Loader2, MoreVertical } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { NumberFormat } from '@/components/number-field';
-import { extract_date_time, generateSecureRandomString, log } from '@/lib/utils';
-import { CURRENCIES } from '@/lib/config/crypt_api';
-import { FormNumberDefault, FormSelectDefault, FormTextFieldDefault } from '@/components/form-components';
+import { extract_date_time, } from '@/lib/utils';
+import { FormNumberDefault, FormSelectDefault } from '@/components/form-components';
 
 
-// Define schema for investment form
-const investmentSchema = z.object({
-  planId: z.string({ required_error: 'Please select a plan' }),
-  amount: z.number({ required_error: 'Investment amount is required' }).positive({ message: 'Amount must be positive' }),
-});
 
-type InvestmentFormValues = z.infer<typeof investmentSchema>;
 
 export interface CryptoData {
   coin: string;
@@ -67,16 +57,10 @@ interface PageProps {
 
 const DepositPage: React.FC<PageProps> = ({ deposits,userId,users }) => {
   const navigation = useNavigation();
-  const navigate = useNavigate();
   const submit = useSubmit();
   const [isSubmitting,set_is_submitting] = useState(false);
-  const [qr_code, set_qr_code] = useState('');
   const [deposit_state,set_deposit_state] = useState<typeof deposits>(deposits);
-
-  //log(deposit_state,'DEPOSIT STA');
-  
   const [currencies, set_currencies] = useState<CryptoData[]>([]);
-  const [address,set_address] = useState('');
   const [prices, set_prices] = useState<{btc:number,eth:number}>({btc:0,eth:0});
 
   const [users_state,set_users_state] = useState<Users[]>(users);
@@ -89,16 +73,7 @@ const DepositPage: React.FC<PageProps> = ({ deposits,userId,users }) => {
 
   
 
-  log(users_select,'Users Select');
-
-  useEffect(() => {
-    const search = new URLSearchParams({
-      address: 'string',
-      value: '100',
-      size: '512',
-    });
-    // Note: This useEffect seems incomplete; consider implementing QR code fetching logic if needed
-  }, []);
+  
 
   useEffect(() => {
     const run = async () => {
@@ -106,7 +81,6 @@ const DepositPage: React.FC<PageProps> = ({ deposits,userId,users }) => {
       const fetch_data = await fetch(`https://api.cryptapi.io/info/?${search}`, { method: 'GET' });
       const data = await fetch_data.json();
       const { btc, eth, trc20 } = data;
-      log(data, 'TCrypto DATA');
       const needed_data = Object.entries({ btc, eth, trc20 });
       set_prices({btc:parseFloat(btc.prices.USD),eth:parseFloat(eth.prices.USD)});
       const reduced_data = needed_data.reduce((acc, current) => {
@@ -185,27 +159,12 @@ const DepositPage: React.FC<PageProps> = ({ deposits,userId,users }) => {
     }
 }
 
-  const validation = z.object({
-    amount: z.string().nonempty({ message: 'Enter the value change' }).refine(
-      (e) => parseFloat(e.replaceAll(',', '')) >= 500,
-      { message: 'Value must be a number greater than the lowest minimum investment amount' }
-    ),
-  });
-
-  const investmentForm = useForm<InvestmentFormValues>({
-    resolver: zodResolver(investmentSchema),
-    defaultValues: {
-      amount: undefined,
-    },
-    resetOptions: { keepDirtyValues: true, keepErrors: true },
-  });
+  
 
   const [form_object,set_form_object] = useState<{amount:string|number,user:string,currency:string,calculated:string|number}>({amount:'',currency:'',calculated:'',user:''})
   const [error_object,set_error_object] = useState<{amount:string,currency:string,user:string}>({amount:' ',currency:' ',user:' '});
 
   const is_form_valid = error_object.amount == '' && error_object.currency == '';
-
-  
 
   const validators = {
     amount:(value:any)=>{
@@ -217,7 +176,7 @@ const DepositPage: React.FC<PageProps> = ({ deposits,userId,users }) => {
 
   const validate_form = ()=>{
     let check = true;
-    const validates = Object.entries(error_object).forEach(([name,value])=>{
+     Object.entries(error_object).forEach(([name,value])=>{
       const validate = validators[name as keyof typeof validators](form_object[name as keyof typeof form_object])
       set_error_object(prev=>({...prev,[name]:validate}));
       check = check && validate=='';
@@ -271,21 +230,9 @@ const DepositPage: React.FC<PageProps> = ({ deposits,userId,users }) => {
         if(data['logged']){
             
             Toasting.success('Deposit update successful',5000);
-           /* const dep:Deposit = {
-                _id:data._id,
-                coin:type,
-                createdAt:(new Date),
-                updatedAt:(new Date),
-                deposit,
-                status:-1,
-                value_coin:parseFloat(form_object.calculated as string),
-                userId:{
-                    name:(users_select.find(e=>e.value === form_object.user)?.name)!,
-                    _id:form_object.user
-                }
-            }*/
+           
             set_deposit_state(prev=>prev.map(e=>e._id === id ? {...e,updatedAt:(new Date),status}: e));
-            //set_deposit_state(prev=>([...prev,dep]));
+           
         }else{ 
                 Toasting.success('Request failed to complete',5000);
         }
@@ -323,21 +270,7 @@ const DepositPage: React.FC<PageProps> = ({ deposits,userId,users }) => {
     }
   }
 
-  const on_submit = async (form_values: any) => {
-    submit(Object.assign({}, form_values, {}), {
-      action: '/dashboard/subscribe',
-      encType: 'application/json',
-      method: 'POST',
-      replace: true,
-    });
-  };
-
-  const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
-
-  const toggleDropdown = (id: string) => {
-    setDropdownOpen((prev) => (prev === id ? null : id));
-  };
-
+  
   return (
     <SectionWrapper animationType="slideInRight" padding="0" md_padding="0">
       <div className="space-y-6 p-4 max-sm:p-2">
@@ -510,28 +443,7 @@ const DepositPage: React.FC<PageProps> = ({ deposits,userId,users }) => {
                       </Button>}
                       </div>
                     </div>
-                    {/*<div className="absolute top-4 right-4">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-gray-300 hover:text-amber-300"
-                        onClick={() => toggleDropdown(tx._id)}
-                        aria-label="More actions"
-                      >
-                        <MoreVertical className="w-4 h-4" />
-                      </Button>
-                      {dropdownOpen === tx._id && (
-                        <div className="absolute right-0 top-full mt-1 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-lg py-2 z-10">
-                          <button
-                            className="flex items-center w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 text-sm"
-                            onClick={() =>null
-                            }
-                          >
-                            Update Status
-                          </button>
-                        </div>
-                      )}
-                    </div>*/}
+                    
                   </Card>
                 ))}
               </div>

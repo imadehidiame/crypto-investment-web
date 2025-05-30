@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useLoaderData, useParams, Form, useActionData, useNavigation, Link, useSubmit, useNavigate } from 'react-router';
+import React, { useState } from 'react';
+import { useParams, useNavigation, useSubmit, useNavigate } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import * as z from 'zod';
@@ -51,9 +51,7 @@ interface PageProps {
 const WithdrawFormPage: React.FC<PageProps> = ({investmentDetails,userWallets}) => {
     //const { investmentDetails, userWallets } = useLoaderData<typeof loader>();
     //const [is_loaded,set_is_loaded] = useState(false);
-    useEffect(()=>{
-        log(userWallets,'User wwallerts');
-    },[]);
+    
     const submit = useSubmit();
     const navigate = useNavigate();
     const max_withdrawal = NumberFormat.thousands(investmentDetails.max_withdrawal.toFixed(2),{add_if_empty:true,allow_decimal:true,allow_zero_start:true,length_after_decimal:2});
@@ -68,9 +66,9 @@ const WithdrawFormPage: React.FC<PageProps> = ({investmentDetails,userWallets}) 
         amount: z.string().min(1, { message: 'Please enter the withdrawal amount' })/*.positive({ message: 'Amount must be positive' }).max(investmentDetails.max_withdrawal{message:`Value cannot be greater than ypur ROI + investment amount ($${max_withdrawal})`})*/.refine((e)=>{
             let amount = parseFloat(e.replaceAll(',',''));
             //console.log(e);
-            console.log(investmentDetails.max_withdrawal);
-            console.log(amount <= investmentDetails.max_withdrawal);
-            console.log(amount);
+            //console.log(investmentDetails.max_withdrawal);
+            //console.log(amount <= investmentDetails.max_withdrawal);
+            //console.log(amount);
             return amount > 0 && amount <= investmentDetails.max_withdrawal ? true : false; 
             //return true;
         },{message:`Value cannot be greater than your ROI + investment amount ($${max_withdrawal})`}),

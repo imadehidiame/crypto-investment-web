@@ -1,11 +1,8 @@
 // app/routes/dashboard.subscribe.tsx
 import React, { useState } from 'react';
-import { useLoaderData, Form, useActionData, useNavigation, useSubmit, useNavigate } from 'react-router';
+import { useNavigation, useSubmit, useNavigate } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Form as ShadcnForm, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -51,7 +48,7 @@ const SubscribePage: React.FC<PageProps> = ({plans,initialSelectedPlan,balance,a
      const navigate = useNavigate();
      const submit = useSubmit();
      const isSubmitting = navigation.state === 'submitting';
-     console.log('Balance ',balance)
+     //console.log('Balance ',balance)
     const [account_data] = useState<{balance:string,investments:string,investable:string}>({
       balance:NumberFormat.thousands(account_info.earnings,{add_if_empty:true,allow_decimal:true,allow_zero_start:true,length_after_decimal:2}),
       investments:NumberFormat.thousands(account_info.investments,{add_if_empty:true,allow_decimal:true,allow_zero_start:true,length_after_decimal:2}),
@@ -144,7 +141,7 @@ const SubscribePage: React.FC<PageProps> = ({plans,initialSelectedPlan,balance,a
             <RRFormDynamic
                                         form_components={form_state}
                                         afterSubmitAction={(a,b)=>{
-                                            console.log({a,b});
+                                            //console.log({a,b});
                                             Toasting.success('Investment has been submitted. Watch out for daily returns');
                                             navigate('/dashboard/investments');
                                         }}
@@ -154,7 +151,7 @@ const SubscribePage: React.FC<PageProps> = ({plans,initialSelectedPlan,balance,a
                                         let mod_minInvestment = parseFloat((minInvestment as string).replaceAll(',',''));
                                         let mod_maxInvestment = parseFloat((maxInvestment as string).replaceAll(',',''));
                                         const check = mod_amount >= mod_minInvestment && mod_amount <= mod_maxInvestment && mod_amount <= balance;
-                                        console.log(check);
+                                        //console.log(check);
                                         if(balance <= 0)
                                           return { error: 'Unfortunately you are running low on investable balance. You will have make a deposit on your account first before investing', valid: false, path: 'amount' };
                                           //const match = password.trim() === confirmPassword.trim();

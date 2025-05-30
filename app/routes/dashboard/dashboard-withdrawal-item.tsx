@@ -14,7 +14,7 @@ import WithdrawalRequest from "@/models/WithdrawalRequest.server";
 
 export const action = async ({request,params,context}:Route.ActionArgs)=>{
     const client_data = await request.json();
-    log(client_data,'Request jsons');
+    //log(client_data,'Request jsons');
     const user = getSess(context);
     let investment = (await Investment.findOne({_id:params.investment_id,userId:user?.user?._id,isWithdrawal:false,withdrawal:0,invested:{$gt:0}}, { invested: 1, isWithdrawal: 1, withdrawal:1, plan: 1, endDate: 1, startDate: 1,  }).populate('plan', 'name dailyReturn duration minInvestment').lean()) as unknown as {invested:number,isWithdrawal:boolean,plan:{_id:mongoose.Types.ObjectId,name:string,dailyReturn:number,duration:number},endDate:Date,startDate:Date,_id:mongoose.Types.ObjectId};
     if(!investment){

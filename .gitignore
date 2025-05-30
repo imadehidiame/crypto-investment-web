@@ -44,7 +44,7 @@ test.c
 m.txt
 appwrite.json
 components_init.json
-tconf.ts
+t.conf.ts
 
 # debug
 npm-debug.log*

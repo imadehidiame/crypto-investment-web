@@ -1,17 +1,10 @@
-// app/routes/dashboard.settings.tsx
-import React, { useState, useEffect, useRef } from 'react'; // Import useEffect
-import { useLoaderData, Form, useActionData, useNavigation, useSubmit, createSession } from 'react-router'; // Corrected import from react-router
+import React, { useState, useEffect, useRef } from 'react'; 
+import { Form, useActionData, useNavigation, useSubmit } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Form as ShadcnForm, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useForm, type Path } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Switch } from '@/components/ui/switch'; // Shadcn Switch
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // Shadcn Select
-import SectionWrapper from '@/components/shared/section-wrapper'; // Assuming this component exists
-import { Trash2, Edit, PlusCircle, CreditCard, Loader2 } from 'lucide-react'; // Added icons for wallet management
+import SectionWrapper from '@/components/shared/section-wrapper';
+import { Trash2, Edit, PlusCircle, CreditCard, Loader2 } from 'lucide-react'; 
 import {
     Dialog,
     DialogContent,
@@ -21,27 +14,20 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from '@/components/ui/input';
-import { log } from '@/lib/utils';
-//import SwitchComponent from '@/components/switch-component';
 import { get_form_data, RRFormDynamic } from '@/components/rr-form-mod-test';
 import { Toasting } from '@/components/loader/loading-anime';
 import SwitchComponent from '@/components/switch-component';
-// Shadcn AlertDialog for confirmation
 
 
-// --- Data Interfaces ---
 
-// Define interface for a single Wallet Address (should match your backend model)
 interface WalletAddress {
-    _id: string; // MongoDB ObjectId as string
+    _id: string; 
     address: string;
     currency: string;
     label: string;
-    createdAt: string; // Date string
+    createdAt: string; 
 }
 
-// Update the SettingsData interface to include wallets
 export interface SettingsData {
     notifications: {
         emailNotifications: boolean;
@@ -50,9 +36,9 @@ export interface SettingsData {
         twofa_auth?: boolean;
     };
     general: {
-        language: string; // Use string for language
+        language: string;
     };
-    wallets: WalletAddress[]; // Add wallets array
+    wallets: WalletAddress[]; 
     currencies?: { name: string, value: string }[]
 }
 
@@ -72,7 +58,6 @@ const notificationSettingsSchema = z.object({
 
 const generalSettingsSchema = z.object({
     language: z.string(),
-    // Add other general settings
 });
 
 // Define schema for adding a new wallet address
@@ -91,11 +76,6 @@ const updateWalletSchema = z.object({
 });
 
 
-// --- Types for form values ---
-type NotificationSettingsValues = z.infer<typeof notificationSettingsSchema>;
-type GeneralSettingsValues = z.infer<typeof generalSettingsSchema>;
-type AddWalletValues = z.infer<typeof addWalletSchema>;
-type UpdateWalletValues = z.infer<typeof updateWalletSchema>;
 
 
 const SettingsPage: React.FC<PageProps> = ({ settings,session }) => {
@@ -115,13 +95,11 @@ const SettingsPage: React.FC<PageProps> = ({ settings,session }) => {
       const lastSubmissionRef = useRef<string | null>(null);
 
     useEffect(() => {
-        log(settings, 'Settings From server');
+        //log(settings, 'Settings From server');
         set_settings_state(settings);
       }, [settings]);
     
-      useEffect(()=>{
-        log(flash_session,'Session message data');
-      },[flash_session]);
+      
       
       
 
@@ -130,8 +108,8 @@ const SettingsPage: React.FC<PageProps> = ({ settings,session }) => {
         if(navigation.state === 'loading' && navigation.formAction?.includes('api/delete-wallet') && navigation.formMethod === 'DELETE'){
             Toasting.success('Wallet has been deleted successfully',10000);
         }
-        log(navigation,'Navigation data');
-        log(navigation.state,'Navigation state');;
+        //log(navigation,'Navigation data');
+        //log(navigation.state,'Navigation state');;
         /*if (actionData?.data?.error) {
           Toasting.error(actionData.data.error, 10000);
         }
@@ -217,7 +195,7 @@ const SettingsPage: React.FC<PageProps> = ({ settings,session }) => {
       const on_submit = async (form_value: any) => {
         const submissionKey = JSON.stringify(form_value);
         if (lastSubmissionRef.current === submissionKey) {
-          log('Duplicate submission prevented', form_value);
+          //log('Duplicate submission prevented', form_value);
           return;
         }
         lastSubmissionRef.current = submissionKey;
@@ -254,7 +232,7 @@ const SettingsPage: React.FC<PageProps> = ({ settings,session }) => {
             set_settings_state(prev=>({...prev,wallets:prev.wallets.map(e=>(e._id === editingWalletId ? Object.assign({},e,data) : e))}));
             Toasting.success('Wallet has been updated successfully');
         }else{
-        log(data,'Data sent from server');
+        //log(data,'Data sent from server');
         //const { wallets } = settings_state;
         set_settings_state(prev=>({...prev,wallets:[...prev.wallets,data]}));
         Toasting.success('Wallet has been added successfully');

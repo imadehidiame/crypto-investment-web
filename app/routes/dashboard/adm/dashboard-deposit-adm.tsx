@@ -78,14 +78,17 @@ export const loader = async ({context}:Route.LoaderArgs) =>{
                                         }
                                     },
                                     { 
-                                        $project: { _id: { $toString: "$_id" }, name: 1, email: 1 } 
+                                        $project: { 
+                                            _id: { 
+                                                $toString: "$_id" 
+                                            }, 
+                                            name: 1, 
+                                            email: 1 
+                                        } 
                                     }
-                                  ]) ;
+                                  ]);
                                   
-                                  users.forEach(user => {
-                                    console.log(user);
-                                    console.log(user._id); // Now a string
-                                  });
+                                  
   
   return {transactions,userId:user?.user?._id.toString(),users}
 }

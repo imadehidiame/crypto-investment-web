@@ -1,10 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router';
-import gsap from 'gsap';
 import { HelpCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import  { Card } from '@/components/ui/card';
-import { index } from '@react-router/dev/routes';
 import SectionWrapper from '@/components/shared/section-wrapper';
 
 const useScrollAnimation = () => {
@@ -43,7 +40,7 @@ export default function FAQ() {
   const animations = ['fadeInUp','fadeIn','slideInRight','slideInLeft']; 
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto py-16 px-4 md:px-6">
+    <div className="min-h-screen max-w-7xl mx-auto py-2 px-4 md:px-6">
       <div ref={faqRef}>
         <h1 className="text-4xl md:text-5xl font-semibold mb-6 text-center text-gold">Frequently Asked Questions</h1>
         <p className="text-lg md:text-xl mb-12 text-center text-gray-400 font-medium max-w-3xl mx-auto">

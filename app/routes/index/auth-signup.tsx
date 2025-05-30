@@ -15,7 +15,6 @@ export const action = async ({request}:Route.ActionArgs) =>{
     const {logged,session} = await signup({name,username:email,password,role:'user'});
     if(!logged)  
       return {data:{logged:false,error:'An error occured on the server'}};
-    log(session,'session string');
     return redirect('/dashboard',{headers:{'Set-Cookie':session as string}})
 
     } catch (error) {

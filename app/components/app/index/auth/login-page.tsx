@@ -8,26 +8,13 @@ import SectionWrapper from '@/components/shared/section-wrapper';
 import { useNavigate, useNavigation, useSubmit } from 'react-router';
 import { get_form_data, RRFormDynamic } from '@/components/rr-form-mod-test';
 import { Toasting } from '@/components/loader/loading-anime';
-import { log } from '@/lib/utils';
+//import { log } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
-// You'll need to install zod and @hookform/resolvers
 
-// Define schemas for validation
 export const loginSchema = z.object({
   username: z.string().min(1, { message: 'Please enter your registered email address' }).email({message:'Please enter a valid email address'}),
   password: z.string().min(1, { message: 'Please enter your password' }),
 });
-
-/*const signupSchema = z.object({
-  name: z.string().min(2, { message: 'Name is required' }),
-  email: z.string().email({ message: 'Invalid email address' }),
-  password: z.string().min(8, { message: 'Password must be at least 8 characters' }),
-  confirmPassword: z.string().min(8, { message: 'Confirm Password is required' }),
-  agreeTerms: z.boolean().refine(val => val === true, { message: 'You must agree to the terms' }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});*/
 
 const LoginPage: React.FC = () => {
   const submit = useSubmit();
@@ -37,7 +24,6 @@ const LoginPage: React.FC = () => {
   const [search,set_search] = useState<string|null>('');
   useEffect(()=>{
     set_search(new URLSearchParams(location.search).get('no_route'))
-    //log(new URLSearchParams(location.search).get('no_routeee'),'Location Path');
   },[]);
   
   
@@ -51,8 +37,6 @@ const LoginPage: React.FC = () => {
   const [form_state,set_form_state] = useState(form_data);
   
   const on_submit = async (form_values:any)=>{
-    //log(form_values,'Form values')
-    //const form_sub = form_data.filter(e=>e.name !== undefined).reduce((prev,{name,value})=>({...prev,[name!]:value}),{});
     submit(form_values,{
       action:'/auth'+search ? '?no_route=1' : '',
       encType:'application/json',
@@ -60,7 +44,7 @@ const LoginPage: React.FC = () => {
       replace:true,
     });
   }
-  
+   
 
   return (
     <SectionWrapper>

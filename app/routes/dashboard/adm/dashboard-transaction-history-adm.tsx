@@ -4,12 +4,13 @@
 //import type { Route } from "./+types/dashboard-profile";
 //import DashboardProfile from "@/components/dashboard-views/user/profile";
 //import type { UserData } from "@/lib/config/session";
-import { log } from "@/lib/utils";
-import type { Route } from "./+types/dashboard-transaction-history";
+//import { log } from "@/lib/utils";
+//import type { Route } from "./+types/dashboard-transaction-history";
 import TransactionHistoryPage from "@/components/dashboard-views/user/transactions";
 import Activity from "@/models/Activity.server";
 import { getSess } from "@/layouts/app-layout";
 import { NumberFormat } from "@/components/number-field";
+import type { Route } from "./+types/dashboard-transaction-history-adm";
 
 
 export const loader = async ({context}:Route.LoaderArgs) =>{

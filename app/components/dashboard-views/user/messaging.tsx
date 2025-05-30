@@ -1,4 +1,3 @@
-// app/routes/dashboard.messages.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import { useLoaderData, Form, useNavigation, useActionData } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +17,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { fetch_request, log } from '@/lib/utils';
+import { fetch_request } from '@/lib/utils';
 import { Toasting } from '@/components/loader/loading-anime';
 
 export interface Message {
@@ -126,7 +125,7 @@ const MessagingPage: React.FC<PageProps> = ({ messageThreads, user }) => {
   }
 
   async function pull_messages(date: Date) {
-    //log(date, 'Date check');
+    
     const fetched = await fetch_request(
       'POST',
       '/api/chat-messaging',
@@ -158,7 +157,7 @@ const MessagingPage: React.FC<PageProps> = ({ messageThreads, user }) => {
     payload?: MessageThread[],
     innerID?: string
   ) => {
-    log('Message push trigger', 'Trigger');
+    
     if (!isDraft) {
       const date = new Date();
       if (flag == 'new')
@@ -273,7 +272,7 @@ const MessagingPage: React.FC<PageProps> = ({ messageThreads, user }) => {
         }),
         'data'
       );
-      log(fetched, 'Fetched update');
+      
       if (fetched.is_error) {
         Toasting.error('An error occurred while sending message');
       }
@@ -293,7 +292,7 @@ const MessagingPage: React.FC<PageProps> = ({ messageThreads, user }) => {
           inner_id: outerID,
         })
       );
-      log(fetched.data?.id, 'Fetched new');
+      
       if (fetched.is_error) {
         return;
       }
@@ -480,7 +479,7 @@ const MessagingPage: React.FC<PageProps> = ({ messageThreads, user }) => {
                       className="bg-amber-300 text-gray-900 hover:bg-amber-400 self-end"
                       disabled={(!selectedThread && !newMessageSubject) || !newMessageContent}
                       onClick={() => {
-                        log(newMessageContent, 'Value m');
+                        
                         send_message(newMessageContent);
                       }}
                     >

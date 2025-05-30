@@ -1,11 +1,6 @@
-// pages/AuthPage.tsx
 import React, { useState } from 'react';
-//import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -14,27 +9,19 @@ import { useNavigate, useNavigation, useSubmit } from 'react-router';
 import { get_form_data, RRFormDynamic } from '@/components/rr-form-mod-test';
 import { Toasting } from '@/components/loader/loading-anime';
 import { Loader2 } from 'lucide-react';
-// You'll need to install zod and @hookform/resolvers
 
-// Define schemas for validation
-const loginSchema = z.object({
-  emailOrUsername: z.string().min(1, { message: 'Email or Username is required' }),
-  password: z.string().min(1, { message: 'Password is required' }),
-});
 
 export const signupSchema = z.object({
   name: z.string().trim().min(2, { message: 'Please enter your name' }),
   email: z.string().email({ message: 'Invalid email address' }),
   password: z.string().min(8, { message: 'Password must be at least 8 characters' }),
   confirmPassword: z.string().min(8, { message: 'Confirm Password is required' }),
-  //agreeTerms: z.boolean().refine(val => val === true, { message: 'You must agree to the terms' }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
 });
 
 
-type LoginFormValues = z.infer<typeof loginSchema>;
 type SignupFormValues = z.infer<typeof signupSchema>;
 
 
@@ -53,26 +40,7 @@ const SignupPage: React.FC = () => {
   
   const [form_state,set_form_state] = useState(form_data);
 
-  // React Hook Form setup for Signup
-  const signupForm = useForm<SignupFormValues>({
-    resolver: zodResolver(signupSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      //agreeTerms: false,
-    },
-  });
-
-
   
-
-  const handleSignupSubmit = (values: SignupFormValues) => {
-    //console.log('Signup submitted:', values);
-    // Implement your signup logic here (API call, user creation)
-    // Redirect to login or dashboard on success
-  };
 
   const on_submit = async (form_values:any)=>{
     //const form_sub = form_data.filter(e=>e.name !== undefined).reduce((prev,{name,value})=>({...prev,[name!]:value}),{});
@@ -81,6 +49,7 @@ const SignupPage: React.FC = () => {
       encType:'application/json',
       method:'POST',
       replace:true,
+    
     });
   }
 

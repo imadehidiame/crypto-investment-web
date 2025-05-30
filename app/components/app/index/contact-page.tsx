@@ -34,14 +34,13 @@ const ContactPage: React.FC = () => {
 
     const handleContactSubmit = (values: ContactFormValues) => {
         console.log('Contact form submitted:', values);
-        // TODO: Implement form submission logic (API call to send email)
-        // Show success message or redirect
+        
     };
 
 
   return (
-    <SectionWrapper animationType='fadeInUp'>
-      <section className="py-16">
+    <SectionWrapper animationType='fadeInUp' md_padding='0' padding='0'>
+      <section className="">
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-12 text-gold">Contact Us</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -57,7 +56,7 @@ const ContactPage: React.FC = () => {
               </div>
                <div className="flex items-center space-x-2">
                  {/* <Phone className="h-5 w-5 text-gold-500" /> */}
-                 <span>Phone: +1 309 407 190</span> {/* Replace with actual number */}
+                 <span>Phone: +1 309 407 190</span> 
                </div>
                 
                {/* Social Media Links (Add icons and links) */}

@@ -2,12 +2,13 @@ import { getSess } from "@/layouts/app-layout";
 //import type { Route } from "./+types/dashboard-home";
 //import DashboardHome, { type RecentTransactionsData } from "@/components/dashboard-views/user/home";
 //import type { Route } from "./+types/dashboard-profile";
-import DashboardProfile from "@/components/dashboard-views/user/profile";
+//import DashboardProfile from "@/components/dashboard-views/user/profile";
 import type { UserData } from "@/lib/config/session";
 import { log } from "@/lib/utils";
 import MessagingPage, { type Message as ChatMessage, type MessageThreadData } from "@/components/dashboard-views/user/messaging";
-import type { Route } from "./+types/dashboard-messaging";
+//import type { Route } from "./+types/dashboard-messaging";
 import Message from "@/models/Message.server";
+import type { Route } from "./+types/dashboard-messaging-adm";
 
 
 const string_to_date = (date:string|Date)=>{

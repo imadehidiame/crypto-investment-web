@@ -99,7 +99,7 @@ export const hasRequiredRole = (role?:string,requiredRole?:string) =>{
 
 export const getRequiredRolePath = (path:string) => {
     const adm_routes = ['/api/adm/deposit'];
-    const check = adm_routes.some(e=>e.includes(path));
+    const check = adm_routes.some(e=>e===path);
     if(check)
         return 'admin';
     if(path.startsWith('/dashboard/adm'))

@@ -1,5 +1,5 @@
-import SubscribePage, { type Subscription, type SubscriptionData } from "@/components/dashboard-views/user/subscription";
-import type { Route } from "./+types/dashboard-subscribe";
+//import SubscribePage, { type Subscription, type SubscriptionData } from "@/components/dashboard-views/user/subscription";
+//import type { Route } from "./+types/dashboard-subscribe";
 import SubscriptionPlan from "@/models/SubscriptionPlan.server";
 import { log } from "@/lib/utils";
 import { NumberFormat } from "@/components/number-field";
@@ -8,8 +8,9 @@ import mongoose from "mongoose";
 import Deposit from "@/models/Deposit.server";
 import Investment from "@/models/Investment.server";
 import Activity from "@/models/Activity.server";
+import type { Route } from "./+types/dashboard-subscribe-adm";
 
-export const action = async ({request,context}:Route.ActionArgs)=>{
+export const action = async ({request,context}:Route.LoaderArgs)=>{
   const user = getSess(context);
   let { plan,amount,plan_name,duration } = await request.json();
   const userId = user?.user?._id;
@@ -63,7 +64,7 @@ export const loader = async ({request}:Route.LoaderArgs)=>{
   
   
 
-  plans = plans.map((e)=>({name:e.name,minInvestment:NumberFormat.thousands(e.minInvestment,{allow_decimal:true,length_after_decimal:2,add_if_empty:true,allow_zero_start:false}),maxInvestment:NumberFormat.thousands(e.maxInvestment,{allow_decimal:true,length_after_decimal:2,add_if_empty:true,allow_zero_start:false}),duration:e.duration,dailyReturn:e.dailyReturn,id:e._id.toString()})).sort((a,b)=>a.dailyReturn - b.dailyReturn) as SubscriptionData;
+  plans = plans.map((e)=>({name:e.name,minInvestment:NumberFormat.thousands(e.minInvestment,{allow_decimal:true,length_after_decimal:2,add_if_empty:true,allow_zero_start:false}),maxInvestment:NumberFormat.thousands(e.maxInvestment,{allow_decimal:true,length_after_decimal:2,add_if_empty:true,allow_zero_start:false}),duration:e.duration,dailyReturn:e.dailyReturn,id:e._id.toString()})).sort((a,b)=>a.dailyReturn - b.dailyReturn);
   
   
   //const subs = await SubscriptionPlan.bulkWrite(inserts);
@@ -106,5 +107,5 @@ return {plans,initialSelectedPlan};
 
 export default function DashboardSubscribe({loaderData}:Route.ComponentProps){
   const {plans,initialSelectedPlan} = loaderData;
-  return <SubscribePage plans={plans as SubscriptionData} initialSelectedPlan={initialSelectedPlan as (/*typeof plans[0]*/ Subscription | null)} />
+  return <></> 
 }

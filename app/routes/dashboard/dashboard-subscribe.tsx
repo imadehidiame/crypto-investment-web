@@ -69,26 +69,21 @@ export const loader = async ({request,context}:Route.LoaderArgs)=>{
 
   plans = plans.map((e)=>({name:e.name,minInvestment:NumberFormat.thousands(e.minInvestment,{allow_decimal:true,length_after_decimal:2,add_if_empty:true,allow_zero_start:false}),maxInvestment:NumberFormat.thousands(e.maxInvestment,{allow_decimal:true,length_after_decimal:2,add_if_empty:true,allow_zero_start:false}),duration:e.duration,dailyReturn:e.dailyReturn,id:e._id.toString()})).sort((a,b)=>a.dailyReturn - b.dailyReturn) as SubscriptionData;
 
+  
+
+  let investmentss = (await Investment.find({userId:context_data?.user?._id}).populate('plan','name duration dailyReturn')).reduce((acc,{startDate,endDate,invested,dailyReturn,plan_name,withdrawal})=>{
+    if(!is_transaction_active(endDate as Date)){
+      return acc+=get_earnings(startDate as Date,dailyReturn as number,invested as number,endDate as Date) - withdrawal as number;
+    }else{
+      return acc-=invested
+    }
+  },0);
+  
   let deposits  = (await Deposit.find({userId:context_data?.user?._id}).sort({date:-1})).reduce((acc,{amount})=>{
     return acc+=amount;
   },0);
 
-  let investmentss = (await Investment.find({userId:context_data?.user?._id}).populate('plan','name duration dailyReturn')).reduce((acc,{startDate,endDate,invested,dailyReturn,plan_name,withdrawal})=>{
-    //if(Date.now*)
-    //log({startDate,endDate,invested,dailyReturn,plan_name,withdrawal},'DTA');
-    //log(get_earnings(startDate as Date,dailyReturn as number,invested as number,endDate as Date),"EARNINGS")
-    if(!is_transaction_active(endDate as Date)){
-      //transaction completed
-      //log((get_earnings(startDate as Date,dailyReturn as number,invested as number,endDate as Date) - withdrawal as number) + acc,'EARNED')
-      return acc+=get_earnings(startDate as Date,dailyReturn as number,invested as number,endDate as Date) - withdrawal as number;
-    }else{
-      //log(invested + get_earnings(startDate as Date,dailyReturn as number,invested as number,endDate as Date) - withdrawal as number,'NEGAT')
-      //ongoing transaction
-      return acc-=invested
-    }
-  },0);
-
-  let residuals = (await Investment.find({userId:context_data?.user?._id}).populate('plan','name duration dailyReturn')).reduce((acc,{startDate,endDate,invested,dailyReturn,plan_name,withdrawal})=>{
+  let residuals = (await Investment.find({userId:context_data?.user?._id}).populate('plan','name duration dailyReturn')).reduce((acc,{startDate,endDate,invested,dailyReturn,withdrawal})=>{
     if(!is_transaction_active(endDate as Date)){
       //completed investment
       //log((get_earnings(startDate as Date,dailyReturn as number,invested as number,endDate as Date) - withdrawal as number) + acc,'EARNED')
@@ -105,11 +100,11 @@ export const loader = async ({request,context}:Route.LoaderArgs)=>{
   
 
   //log(investmentss,'INVEST');
-  log(deposits + residuals.earnings,'Total DEPOS')
+  //log(deposits + residuals.earnings,'Total DEPOS')
 
   residuals = Object.assign({},residuals,{investments:parseFloat((residuals.investments as number).toFixed(2)),earnings: parseFloat((residuals.earnings+=deposits as number).toFixed(2))}) as {earnings:number,investments:number};
 
-  log(residuals,'RESIDUALS');
+  //log(residuals,'RESIDUALS');
 
   //log(parseFloat(((deposits+investmentss) as number).toFixed(2)),'BALV')
   //log(deposits+investmentss,'Total Balance')

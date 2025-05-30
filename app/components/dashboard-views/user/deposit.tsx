@@ -81,7 +81,6 @@ const DepositPage: React.FC<PageProps> = ({ deposits,userId }) => {
       const fetch_data = await fetch(`https://api.cryptapi.io/info/?${search}`, { method: 'GET' });
       const data = await fetch_data.json();
       const { btc, eth, trc20 } = data;
-      log(data, 'TCrypto DATA');
       const needed_data = Object.entries({ btc, eth, trc20 });
       set_prices({btc:parseFloat(btc.prices.USD),eth:parseFloat(eth.prices.USD)});
       const reduced_data = needed_data.reduce((acc, current) => {
@@ -369,36 +368,7 @@ set_address(address_in);
               </Button>
 
             </div>
-            {/*<RRFormDynamic
-              form_components={form_state}
-              afterSubmitAction={(a, b) => {
-                console.log({ a, b });
-                Toasting.success('Investment has been submitted. Watch out for daily returns');
-                navigate('/dashboard/investments');
-              }}
-              submitForm={on_submit}
-              on_change={(on_update, value) => {
-                set_form_state((prev) =>
-                  prev.map((form) => (form.name === on_update ? { ...form, value } : form))
-                );
-              }}
-              className="space-y-3 p-0 flex flex-wrap gap-4 items-center mb-4"
-              notify={(notify) => {
-                Toasting.error(notify, 10000);
-              }}
-              validateValues={['amount']}
-            >
-              <Button
-                variant="outline"
-                className="ml-auto border-gold-500 border-amber-300 text-amber-300 hover:border-amber-50 hover:text-amber-50 cursor-pointer text-sm py-2 h-9"
-                disabled={isSubmitting}
-              >
-                {isSubmitting && <Loader2 className="animate-spin w-4 h-4 mr-2" />}
-                {isSubmitting ? 'Processing Deposit' : 'Deposit'}
-              </Button>
-            </RRFormDynamic>*/}
-
-            {/* QR Code and Wallet Address Section */}
+            
             {qr_code && <div className="flex flex-col items-center gap-4 mb-4">
               {/* QR Code Image */}
               <div className="flex-shrink-0">
@@ -427,7 +397,7 @@ set_address(address_in);
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-5 h-4" // Increased width to w-5, kept height at h-4
+                    className="w-5 h-4" 
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -443,18 +413,7 @@ set_address(address_in);
               </div>
             </div>}
 
-           {/**
-            id: string;
-  amount: number | string;
-  date: Date | string;
-  status: number;
-  updatedAt: Date;
-  currency:string;
-  currency_amount:string;
-            */}
-
             <CardTitle className="text-lg font-bold text-amber-300 mb-4">Deposit History</CardTitle>
-
             {deposit_state.length > 0 ? (
               <>
                 <div className="hidden md:block overflow-x-auto">

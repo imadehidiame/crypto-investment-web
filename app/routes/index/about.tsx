@@ -1,5 +1,4 @@
 import SectionWrapper from '@/components/shared/section-wrapper';
-import { Card } from '@/components/ui/card';
 import React from 'react';
 
 const AboutUsPage: React.FC = () => {
