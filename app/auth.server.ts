@@ -11,7 +11,7 @@ export const login = async ({username,password}:{username:string,password:string
     try {
     //log({username,password},'Login Details');
     await ConnectToDB();
-    const {Sessions} = await ((await import('@/config.server')).default());
+    const {Sessions} = (await import('@/config.server')).default
     const JWT_SECRET = new TextEncoder().encode(Sessions.jwt_secret);
     const user = await User.findOne({$or:[{email:username}]});
     if(!user){
@@ -24,7 +24,7 @@ export const login = async ({username,password}:{username:string,password:string
         return {logged:false,message:'Invalid username and password combination'};
     }
     const set_db_session = await createDbSession(user._id);
-    log(user,'USER DATA');
+    //log(user,'USER DATA');
     const set_cookie_session = await ((await sessionStore(true,false,user.role === 'admin' ? Sessions.adm_name : Sessions.name)) as Cookie).serialize(await encrypt_data({token:set_db_session},JWT_SECRET,'1y'));
     //const jwt = await new SignJWT({userId:user._id.toString(),role:user.role,email:user.email,name:user.name}).setProtectedHeader({alg:'HS256'}).setExpirationTime(Sessions.//is_development ? '1y' : '1h').setIssuedAt().sign(JWT_SECRET);
     //const jwt = await create_token({userId:user._id.toString(),role:user.role,email:user.email,name:user.name});
@@ -61,9 +61,9 @@ export const signup = async ({username,name,password,role}:{username:string,name
         //createdAt:new Date(Date.now()),
         updatedAt:new Date(Date.now())
     });
-    log(user,'User data object');
+    //log(user,'User data object');
     const served = await user.save();
-    log(served,'Saved data');
+    //log(served,'Saved data');
     const user_data = await login({username,password});
     if(!user_data.logged)
         return {logged:false,message:'An error occured'};
@@ -114,7 +114,7 @@ interface JwtData extends DBSessionData {
 }
 
 export const create_token = async (data:JWTPayload) =>{
-    const {Sessions} = await ((await import('@/config.server')).default());
+    const {Sessions} = (await import('@/config.server')).default
     const JWT_SECRET = new TextEncoder().encode(Sessions.jwt_secret);
     return await new SignJWT(data).setProtectedHeader({alg:'HS256'}).setExpirationTime(Sessions.is_development ? '1y' : '1h').setIssuedAt().sign(JWT_SECRET);
 }

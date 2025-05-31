@@ -8,7 +8,7 @@ let isConnected = false;
 
 export const ConnectToDB = async () => {
     //log('About to connect to DB','Good');
-    const {MongoDb} = await ((await import('@/config.server')).default());
+    const {MongoDb} = (await import('@/config.server')).default
     if(isConnected)
         return;
     try {
