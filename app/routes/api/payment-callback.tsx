@@ -1,7 +1,5 @@
 import { log } from "@/lib/utils";
 import type { Route } from "./+types/payment-callback";
-//import { verify,createVerify,createSign, type KeyLike,type BinaryLike } from "node:crypto";
-//import PaymentCallback from "@/models/Payment.server";
 import Payment, { type IPayment } from "@/models/Payment.server";
 import { getSess } from "@/layouts/app-layout";
 import Activity from "@/models/Activity.server";
