@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 export const sessionEnv = async ()=>{
     console.log('ENV FOR MG DB');
     console.log(process.env.MONGO_DB_CONNECTION_STRING)
