@@ -1,11 +1,12 @@
 import crypto from 'crypto'
 import { createCookie, redirect, type Cookie } from 'react-router';
-import sessionEnv, { type DBSessionData, type SessionData } from './lib/config/session';
+//import sessionEnv, { type DBSessionData, type SessionData } from './lib/config/session';
 import Session from './models/Session.server';
 import mongoose from 'mongoose';
 import { ConnectToDB } from './db.server';
 import { log } from './lib/utils';
 import { jwtDecrypt, jwtVerify, SignJWT } from 'jose';
+import type { DBSessionData } from './lib/config/session';
 
 export const generateSessionToken = ():string =>{
     return crypto.randomBytes(32).toString('hex');
@@ -19,7 +20,7 @@ export const create_flash_session = async (data?:any|string,set_session?:boolean
         return createCookie('fdm', {});
     }
 
-    const {Sessions} = await sessionEnv();
+    const {Sessions} = await ((await import('@/config.server')).default());
     if(typeof data == 'string')
         data = JSON.parse(data);
     const signed_data = await new SignJWT(data).setProtectedHeader({alg:'HS256'}).setExpirationTime('1 minute').setIssuedAt().sign((new TextEncoder()).encode(Sessions.jwt_secret));
@@ -46,7 +47,7 @@ export const get_flash_session = async(request:Request)=>{
 }
 
 export const sessionStore = async (set_session?:boolean,clear_session?:boolean,session_name?:string,session_time_in_seconds?:number,serialize_data?:any) => {
-    const {Sessions} = await sessionEnv();
+    const {Sessions} = await ((await import('@/config.server')).default());
     if(serialize_data){
         if(typeof serialize_data === 'string'){
             serialize_data = JSON.parse(serialize_data);
@@ -96,18 +97,19 @@ export const sessionStore = async (set_session?:boolean,clear_session?:boolean,s
 }
 
 export const encrypt_data = async (data:any,encode_key?:Uint8Array<ArrayBufferLike>,expire?:string) =>{
-    const { Sessions } = await sessionEnv();
+    const {Sessions} = await ((await import('@/config.server')).default());
     return await new SignJWT(data).setProtectedHeader({alg:'HS256'}).setExpirationTime(expire ? expire : '1y').setIssuedAt().sign(encode_key ? encode_key : (new TextEncoder()).encode(Sessions.jwt_secret));
 }
 
 export const decrypt_data = async <T>(session:string,key?:Uint8Array<ArrayBufferLike>) => {
-    const { Sessions } = await sessionEnv();
+    const {Sessions} = await ((await import('@/config.server')).default());
     const decrypt = (await jwtVerify(session,key ? key : (new TextEncoder().encode(Sessions.jwt_secret)),{algorithms:['HS256']}));
     return decrypt ? <T>decrypt.payload : null;
 }
 
 export const getSession = async (request:Request,is_user=true) =>{
-    const {Sessions} = await sessionEnv();
+    const {Sessions} = await ((await import('@/config.server')).default());
+    //const { Sessions} = await Session;
     return ((await sessionStore(false,undefined,is_user ? Sessions.name : Sessions.adm_name)) as Cookie).parse(request.headers.get('Cookie'));
 } 
 
@@ -126,7 +128,7 @@ export const createDbSession = async (userId:mongoose.Types.ObjectId|string):Pro
 
 export const getUserFromSession = async (request:Request,is_user = true) => {
     //log(is_user===false,'IS ADMIN');
-    const {Sessions} = await sessionEnv();
+    const {Sessions} = await ((await import('@/config.server')).default());
     const token = await getSession(request,is_user);
     //log(token,'Session Token');
     if(!token) 
@@ -153,7 +155,7 @@ export const getUserFromSession = async (request:Request,is_user = true) => {
 }
 
 export const destroySession = async (request:Request,is_user = true) =>{
-    const {Sessions} = await sessionEnv();
+    const {Sessions} = await ((await import('@/config.server')).default());
     await ConnectToDB();
     const token = await getSession(request,is_user);
     if(token){

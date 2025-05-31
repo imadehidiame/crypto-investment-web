@@ -1,5 +1,5 @@
 import { SignJWT, type JWTPayload } from "jose";
-import sessionEnv, { type DBSessionData } from "./lib/config/session"
+import { type DBSessionData } from "./lib/config/session"
 import User from "./models/User.server";
 import { createDbSession, destroySession, encrypt_data, getUserFromSession, sessionStore } from "./session.server";
 import { ConnectToDB } from "./db.server";
@@ -9,9 +9,9 @@ import type { Cookie } from "react-router";
 
 export const login = async ({username,password}:{username:string,password:string})=>{
     try {
-    log({username,password},'Login Details');
+    //log({username,password},'Login Details');
     await ConnectToDB();
-    const { Sessions } = await sessionEnv()
+    const {Sessions} = await ((await import('@/config.server')).default());
     const JWT_SECRET = new TextEncoder().encode(Sessions.jwt_secret);
     const user = await User.findOne({$or:[{email:username}]});
     if(!user){
@@ -114,7 +114,7 @@ interface JwtData extends DBSessionData {
 }
 
 export const create_token = async (data:JWTPayload) =>{
-    const { Sessions } = await sessionEnv()
+    const {Sessions} = await ((await import('@/config.server')).default());
     const JWT_SECRET = new TextEncoder().encode(Sessions.jwt_secret);
     return await new SignJWT(data).setProtectedHeader({alg:'HS256'}).setExpirationTime(Sessions.is_development ? '1y' : '1h').setIssuedAt().sign(JWT_SECRET);
 }
