@@ -48,6 +48,7 @@ export const get_flash_session = async(request:Request)=>{
 
 export const sessionStore = async (set_session?:boolean,clear_session?:boolean,session_name?:string,session_time_in_seconds?:number,serialize_data?:any) => {
     const {Sessions} = (await import('@/config.server')).default
+    //return ((await sessionStore(false,undefined,is_user ? Sessions.name : Sessions.adm_name)) as Cookie).parse(request.headers.get('Cookie'));
     if(serialize_data){
         if(typeof serialize_data === 'string'){
             serialize_data = JSON.parse(serialize_data);
@@ -157,15 +158,14 @@ export const getUserFromSession = async (request:Request,is_user = true) => {
 export const destroySession = async (request:Request,is_user = true) =>{
     const {Sessions} = (await import('@/config.server')).default
     await ConnectToDB();
-    const token = await getSession(request,is_user);
+    const token = await getSession(request,is_user); 
     if(token){
         const token_value = <{token:string}>(await decrypt_data(token));
         try {
-            Session.deleteOne({token:token_value.token})     
+             await Session.deleteOne({token:token_value.token});
         } catch (error) { 
            log('Error deleting session','DB error'); 
         }
-        
     } 
     return await ((await sessionStore(true,true,is_user ? Sessions.name : Sessions.adm_name)) as Cookie ).serialize('');
 }
