@@ -45,6 +45,8 @@ export default [
     route("api/chat-messaging", "routes/api/chat-messaging.tsx"),  
     route("api/payment-callback/:userId/:paymentId",'routes/api/payment-callback.tsx'),
     route("api/adm/deposit",'routes/api/adm-deposit.tsx'),
+    route("api/logout",'routes/api/logout.tsx'),
+    route("api/profile",'routes/api/profile.tsx'),
   ]),
   
   

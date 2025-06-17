@@ -76,8 +76,9 @@ export const signup = async ({username,name,password,role}:{username:string,name
     
 }
 
-export const logout = async (request:Request)=>{
-    return await destroySession(request);
+export const logout = async (request:Request,is_user:boolean)=>{
+    //return {session:set_cookie_session,logged:true,role:user.role};
+    return await destroySession(request,is_user);  
 }
 
 export const isAuthenticated = async (request:Request)=>{

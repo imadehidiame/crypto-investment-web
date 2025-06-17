@@ -1,5 +1,5 @@
-import React from 'react';
-import { useLoaderData, Form, useActionData, useNavigation } from 'react-router';
+import React, { useEffect, useState } from 'react';
+import { useLoaderData, Form, useActionData, useNavigation, useSubmit, type SubmitTarget } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -11,21 +11,22 @@ import * as z from 'zod';
 import type { UserData } from '@/lib/config/session';
 import SectionWrapper from '@/components/shared/section-wrapper';
 import { log } from '@/lib/utils';
+import { Toasting } from '@/components/loader/loading-anime';
 //import { getAuthenticatedUser } from '../auth.server'; // Import server-side auth function
 
 
 
-// Define schemas for client-side validation
+
 const profileSchema = z.object({
-  name: z.string().min(2, { message: 'Name is required' }).optional(),
-  email: z.string().email({ message: 'Invalid email address' }).optional(),
-  // Add other profile fields you want to allow updating
+  name: z.string().min(2, { message: 'Name is required' }),
+  email: z.string().email({ message: 'Please enter a valid email address' }),
+  user_password: z.string().min(1, { message: 'Please enter current password to update' }),
 });
 
 const passwordChangeSchema = z.object({
   currentPassword: z.string().min(1, { message: 'Current password is required' }),
-  newPassword: z.string().min(8, { message: 'New password must be at least 8 characters' }),
-  confirmNewPassword: z.string().min(8, { message: 'Confirm new password is required' }),
+  newPassword: z.string().min(8, { message: 'Your new password must be at least 8 characters' }),
+  confirmNewPassword: z.string().min(1, { message: 'Please re-enter your password' }),
 }).refine((data) => data.newPassword === data.confirmNewPassword, {
   message: "New passwords don't match",
   path: ["confirmNewPassword"],
@@ -39,12 +40,20 @@ interface PageProps {
   user:UserData
 }
 
+type ActionData = {
+    error?:string;
+    formType?:string;
+    message?:string
+} | null
+
 
 const DashboardProfile: React.FC<PageProps> = ({user}) => {
     //const { user } = useLoaderData<typeof loader>();
      const actionData = useActionData();
      const navigation = useNavigation();
      const isSubmitting = navigation.state === 'submitting';
+     const submit = useSubmit();
+     const json_action = useState<ActionData>(null);
 
      
 
@@ -54,15 +63,16 @@ const DashboardProfile: React.FC<PageProps> = ({user}) => {
      defaultValues: {
        name: user?.name || '',
        email: user?.email || '',
-       
+       user_password:''
      },
+     mode:'all',
        resetOptions: {
-           keepDirtyValues: true, // Keep user input if validation fails
+           keepDirtyValues: true, 
            keepErrors: true,
        },
    });
 
-   // React Hook Form setup for Password Change
+   
     const passwordChangeForm = useForm<PasswordChangeFormValues>({
         resolver: zodResolver(passwordChangeSchema),
         defaultValues: {
@@ -70,7 +80,8 @@ const DashboardProfile: React.FC<PageProps> = ({user}) => {
             newPassword: '',
             confirmNewPassword: '',
         },
-         // Reset form when action is successful for this form type
+        mode:'onChange',
+         
           resetOptions: {
               keepDirtyValues: true,
               keepErrors: true,
@@ -79,20 +90,36 @@ const DashboardProfile: React.FC<PageProps> = ({user}) => {
 
     // Reset forms on successful action submission
     React.useEffect(() => {
-        if (actionData?.formType === 'updateProfile' && actionData?.message) {
-            profileForm.reset(profileForm.getValues()); // Reset with current form values
-            // TODO: Display success message
+        // {"formType":"updateProfile","name":"Ehidiamen Imadegbo","email":"imadehidiame@gmail.com"}
+        if(actionData){
+        //const json_action_data = JSON.parse(actionData);
+        //console.log({actionData:json_action_data});
+        if(actionData?.error){
+            console.log(actionData?.error);
+            Toasting.error(actionData.error,10000,'top-center');
+        }else{ 
+        if (actionData?.message) {
+            //profileForm.reset(profileForm.getValues()); 
+            Toasting.success(actionData.message,10000,'top-center');
         }
         if (actionData?.formType === 'changePassword' && actionData?.message) {
             passwordChangeForm.reset(); // Clear password fields
-            // TODO: Display success message
+            
         }
          if (actionData?.error) {
-            // TODO: Display error message (e.g., using a toast)
              console.error('Profile Action Error:', actionData.error);
          }
+        }
+     }
+        
     }, [actionData, profileForm, passwordChangeForm]);
 
+    useEffect(()=>{
+        //console.log(navigation.formData);
+        //console.log(navigation.formAction);
+        //console.log(navigation.location);
+        console.log(navigation.formData?.get('formType'))
+    },[navigation.formData]);
 
   return (
     <SectionWrapper animationType='slideInLeft' padding='4' md_padding='4'>
@@ -107,7 +134,22 @@ const DashboardProfile: React.FC<PageProps> = ({user}) => {
         </CardHeader>
         <CardContent>
             <ShadcnForm {...profileForm}>
-                 <Form method="post" onSubmit={profileForm.handleSubmit((values) => { /* Client-side validation */ })} className="space-y-6">
+                 <Form method="post"
+                    action="/dashboard/profile"
+                    encType='application/x-www-form-urlencoded' 
+                 
+                  onSubmit={(e)=>{
+                    //console.log(profileForm.formState.errors);
+                    //console.log(profileForm.formState.isValid);
+                    //console.log(actionData);
+                    //console.log(navigation.formData);
+                    //console.log(navigation.formAction);
+                    //console.log(navigation.location);
+                    if(profileForm.formState.errors.email || profileForm.formState.errors.user_password || profileForm.formState.errors.name){
+                        e.preventDefault();
+                    }
+                  }}
+                  className="space-y-6">
                      <input type="hidden" name="formType" value="updateProfile" />
                     <FormField
                         control={profileForm.control}
@@ -135,16 +177,31 @@ const DashboardProfile: React.FC<PageProps> = ({user}) => {
                             </FormItem>
                         )}
                     />
-                   {/* Add more profile fields */}
-                    <Button type="submit" className="bg-amber-300 text-gray-900 hover:bg-amber-400" disabled={isSubmitting && actionData?.formType === 'updateProfile'}>
-                        {isSubmitting && actionData?.formType === 'updateProfile' ? 'Saving...' : 'Save Changes'}
+
+                    <FormField
+                        control={profileForm.control}
+                        name="user_password"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="text-gray-300">Current Password</FormLabel>
+                                <FormControl>
+                                    <Input type="password" className="bg-gray-700 border-gray-600 text-white focus-visible:ring-amber-300" {...field} name="user_password" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                     
+                   
+                    <Button type="submit" className="bg-amber-300 text-gray-900 hover:bg-amber-400" disabled={isSubmitting}>
+                        {isSubmitting && navigation.formData?.get('formType') === 'updateProfile'  ? 'Saving...' : 'Save Changes'}
                    </Button>
-                    {actionData?.formType === 'updateProfile' && actionData?.error && (
+                    {/*actionData?.formType === 'updateProfile' && navigation.state !=='submitting' && actionData?.error && (
                        <p className="text-red-500 mt-4">{actionData.error}</p>
-                    )}
-                     {actionData?.formType === 'updateProfile' && actionData?.message && (
+                    )*/}
+                     {/*actionData?.formType === 'updateProfile' && actionData?.message && (
                         <p className="text-green-500 mt-4">{actionData.message}</p>
-                     )}
+                     )*/}
                  </Form>
             </ShadcnForm>
         </CardContent>
@@ -157,7 +214,11 @@ const DashboardProfile: React.FC<PageProps> = ({user}) => {
          </CardHeader>
          <CardContent>
             <ShadcnForm {...passwordChangeForm}>
-                <Form method="post" onSubmit={passwordChangeForm.handleSubmit((values) => { /* Client-side validation */ })} className="space-y-6">
+                <Form method="post" action='/dashboard/profile' onSubmit={(e)=>{
+                    if(passwordChangeForm.formState.errors.confirmNewPassword || passwordChangeForm.formState.errors.currentPassword || passwordChangeForm.formState.errors.newPassword){
+                        e.preventDefault();
+                    }
+                }} className="space-y-6">
                     <input type="hidden" name="formType" value="changePassword" />
                    <FormField
                         control={passwordChangeForm.control}
@@ -198,15 +259,15 @@ const DashboardProfile: React.FC<PageProps> = ({user}) => {
                             </FormItem>
                         )}
                     />
-                   <Button type="submit" className="bg-amber-300 text-gray-900 hover:bg-amber-400" disabled={isSubmitting && actionData?.formType === 'changePassword'}>
-                       {isSubmitting && actionData?.formType === 'changePassword' ? 'Changing...' : 'Change Password'}
+                   <Button type="submit" className="bg-amber-300 text-gray-900 hover:bg-amber-400" disabled={isSubmitting}>
+                       {isSubmitting && navigation.formData?.get('formType') === 'changePassword' ? 'Changing...' : 'Change Password'}
                    </Button>
-                     {actionData?.formType === 'changePassword' && actionData?.error && (
+                     {/*actionData && actionData?.formType === 'changePassword' && actionData?.error && (
                        <p className="text-red-500 mt-4">{actionData.error}</p>
-                    )}
-                     {actionData?.formType === 'changePassword' && actionData?.message && (
+                    )*/}
+                     {/*actionData?.formType === 'changePassword' && actionData?.message && (
                         <p className="text-green-500 mt-4">{actionData.message}</p>
-                     )}
+                     )*/}
                 </Form>
             </ShadcnForm>
          </CardContent>

@@ -12,7 +12,38 @@ import { FormCheckboxComponentMod, FormFieldComponent, FormFileUploaderMod, Form
 import { Toasting } from "./loader/loading-anime";
 import { log } from "@/lib/utils";
 
-// Define stable types for action data
+
+export interface FormElementDefault<T extends FieldValues> {
+  type: 'text' | 'select' | 'textarea' | 'file' | 'multiple_file' | 'checkbox' | 'component' | 'rich_text' | "integer" | "float" | "password";
+  name?: string |  number | symbol;
+  disabled?: boolean;
+  value?: string | number | File | any | any[];
+  label?: string;
+  id?: string;
+  form_state?:T;
+  set_form_state?:React.Dispatch<React.SetStateAction<T>>;
+  field_classnames?: string;
+  validation?: z.ZodType;
+  placeholder?: string;
+  label_classnames?: string;
+  size_limit?: number;
+  file_count?: number;
+  selects?: { name: string; value: string }[];
+  checks?: { name: string; value: string }[];
+  classNames?: string;
+  component?: React.ReactNode;
+  refine?: (value: any) => boolean | { valid: boolean; error: string; path?: string };
+  flag?: {
+    allow_decimal?: boolean;
+    allow_zero_start?: boolean;
+    length_after_decimal?: number;
+    add_if_empty?: boolean;
+    total_length?: number;
+    format_to_thousand?: boolean;
+    allow_negative_prefix?: boolean;
+  };
+}
+
 interface ActionData {
   data: {
     logged?: boolean;
@@ -30,16 +61,18 @@ type RefineFunction<T extends FieldValues> = (data: z.infer<z.ZodObject<T>>) =>
    boolean 
   | { valid: boolean; error: string; path?: keyof T | string | number | symbol };
 
-// Define form element type tied to schema
+
 export interface FormElement<T extends FieldValues> {
   type: 'text' | 'select' | 'textarea' | 'file' | 'multiple_file' | 'checkbox' | 'component' | 'rich_text' | 'float' | 'integer' | 'password';
-  name?: keyof T;
+  name?: keyof T | number | string | symbol;
   value?: string | number | File | any[] | null | undefined;
   classNames?: string;
   disabled?: boolean;
   field_classnames?: string;
   label_classnames?: string;
   label?: string;
+  form_state?:T;
+  set_form_state?:React.Dispatch<React.SetStateAction<T>>;
   id?: string;
   validation?: z.ZodType<T>;
   placeholder?: string;
@@ -60,7 +93,7 @@ export interface FormElement<T extends FieldValues> {
   };
 }
 
-// Define custom form props with stricter generic
+
 interface CustomFormProps<T extends FieldValues> extends FormProps {
   validateValues?: string[];
   notify?: (error: string) => void;
@@ -73,6 +106,7 @@ interface CustomFormProps<T extends FieldValues> extends FormProps {
   redefine?:(value:z.infer<z.ZodObject<T>>) => {valid: boolean; error: string; path?: string}
   children?: ReactNode;
   form_components: FormElement<T>[];
+  set_form_elements ?: React.Dispatch<React.SetStateAction<T[]>>;
   on_change?: (name: keyof T | string, value: any) => void;
 }
 
@@ -80,10 +114,11 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
   (
     {
       validateValues,
-      notify,
+      notify, 
       submitForm,
       loadAnimation,
       hideAnimation,
+      set_form_elements,
       afterSubmitAction,
       on_change,
       refine,
@@ -281,16 +316,20 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
                   form={form}
                   field_classnames={field_classnames}
                   label={label}
+                  //form_state={form_state}
+                  //set_form_state={set_form_state}
                   className={classNames}
                   name={name as Path<z.infer<typeof schema>>}
                   input_type={type}
                   placeholder={placeholder}
                   id={id ? id : name as string}
                   on_change={(value) => {
-                    console.log('text field');
-                    console.log({ value });
-                    console.log(element.name);
-                    on_change?.(element.name!, value);
+                    //console.log('text field');
+                    //console.log({ value });
+                    //console.log(element.name);
+                    //set_form_state?.(prev=>prev)
+                    set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                    //on_change?.(element.name!, value);
                   }}
                 />
               );
@@ -310,6 +349,7 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
                     console.log({ value });
                     console.log(element.name);
                     on_change?.(element.name!, value);
+                    set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
                   }}
                 />
               );
@@ -330,7 +370,7 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
                   is_multiple={true}
                   on_change={(value) => {
                     console.log('Multiple file');
-                    on_change?.(element.name!, value);
+                    set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
                   }}
                 />
               );
@@ -348,7 +388,8 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
                   label_classname={label_classnames}
                   on_change={(value) => {
                     log(value, 'Rich text value');
-                    on_change?.(element.name!, value);
+                    //on_change?.(element.name!, value);
+                    set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
                   }}
                 />
               );
@@ -367,7 +408,8 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
                   label_classname={label_classnames}
                   on_change={(value) => {
                     log(value, 'Number value float');
-                    on_change?.(element.name!, value);
+                    //on_change?.(element.name!, value);
+                    set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
                   }}
                 />
               );
@@ -386,7 +428,8 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
                   label_classname={label_classnames}
                   on_change={(value) => {
                     log(value, 'Number value integer');
-                    on_change?.(element.name!, value);
+                    set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                    //on_change?.(element.name!, value);
                   }}
                 />
               );
@@ -405,7 +448,8 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
                     console.log('Select');
                     console.log({ value });
                     console.log(element.name);
-                    on_change?.(element.name!, value);
+                    //on_change?.(element.name!, value);
+                    set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
                   }}
                 />
               );
@@ -454,9 +498,9 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
 
 RRFormDynamic.displayName = "RRFormDynamic";
 
-export function get_form_data(
+export function get_form_data<T extends FieldValues>(
   type: "text" | "select" | "textarea" | "file" | "multiple_file" | "checkbox" | "component" | "rich_text" | "float" | "integer" | "password",
-  name?: string,
+  name?: string | number | symbol,
   value?: any,
   validation?: z.ZodType,
   label?: string,
@@ -479,7 +523,9 @@ export function get_form_data(
     format_to_thousand?: boolean;
     allow_negative_prefix?: boolean;
   },
-  refine?: (value: any) => boolean | { valid: boolean; error: string; path?: string }
+  refine?: (value: any) => boolean | { valid: boolean; error: string; path?: string },
+  form_state?:T,
+  set_form_state?:React.Dispatch<React.SetStateAction<T>>,
 ) {
   return {
     type,
@@ -498,35 +544,9 @@ export function get_form_data(
     disabled,
     label_classnames,
     flag,
-    refine
+    refine,
+    form_state,
+    set_form_state
   };
 }
 
-export interface FormElementDefault {
-  type: 'text' | 'select' | 'textarea' | 'file' | 'multiple_file' | 'checkbox' | 'component' | 'rich_text' | "integer" | "float" | "password";
-  name?: string;
-  disabled?: boolean;
-  value?: string | number | File | any | any[];
-  label?: string;
-  id?: string;
-  field_classnames?: string;
-  validation?: z.ZodType;
-  placeholder?: string;
-  label_classnames?: string;
-  size_limit?: number;
-  file_count?: number;
-  selects?: { name: string; value: string }[];
-  checks?: { name: string; value: string }[];
-  classNames?: string;
-  component?: React.ReactNode;
-  refine?: (value: any) => boolean | { valid: boolean; error: string; path?: string };
-  flag?: {
-    allow_decimal?: boolean;
-    allow_zero_start?: boolean;
-    length_after_decimal?: number;
-    add_if_empty?: boolean;
-    total_length?: number;
-    format_to_thousand?: boolean;
-    allow_negative_prefix?: boolean;
-  };
-}

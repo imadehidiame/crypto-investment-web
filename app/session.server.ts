@@ -161,14 +161,13 @@ export const destroySession = async (request:Request,is_user = true) =>{
     if(token){
         const token_value = <{token:string}>(await decrypt_data(token));
         try {
-            Session.deleteOne({token:token_value.token})    
-        } catch (error) {
+            Session.deleteOne({token:token_value.token})     
+        } catch (error) { 
            log('Error deleting session','DB error'); 
         }
         
-    }
+    } 
     return await ((await sessionStore(true,true,is_user ? Sessions.name : Sessions.adm_name)) as Cookie ).serialize('');
-    //    
 }
 
 /*export const sessionStore = createSessionStorage({

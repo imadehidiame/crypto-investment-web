@@ -7,7 +7,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessa
 import { Checkbox } from "./ui/checkbox";
 import ImageUploader from "./image-uploder";
 import AddImageSvg from "./add-image-svg";
-import { cn, NumberFormat } from "@/lib/utils";
+import { cn, log, NumberFormat } from "@/lib/utils";
 import { Textarea } from "./ui/textarea";
 import ImageUploaderMultiple from "./image-uploader-multiple";
 //import type { z } from "zod";
@@ -31,6 +31,8 @@ interface FormFieldComponentProps<T extends FieldValues> {
   size_limit?:number;
   file_count?:number;
   field_classnames?:string;
+  form_state?:T;
+  set_form_state?:React.Dispatch<React.SetStateAction<T>>;
   on_change?:(value:any)=>void;
   
 }
@@ -53,7 +55,7 @@ interface FormFieldComponentProps<T extends FieldValues> {
  */
 
 
-export const FormFieldComponent = <T extends FieldValues>({ form, name, placeholder, label, description, className,field_classnames, input_type = "text", label_classname,icon,id,disabled,on_change }: FormFieldComponentProps<T>) => {
+export const FormFieldComponent = <T extends FieldValues>({ form, name, placeholder, label, description, className,field_classnames, input_type = "text", label_classname,icon,id,disabled,on_change,set_form_state,form_state }: FormFieldComponentProps<T>) => {
   return (
     <FormFieldContext.Provider value={{name}}>
       <FormField
@@ -67,6 +69,11 @@ export const FormFieldComponent = <T extends FieldValues>({ form, name, placehol
               <Input placeholder={placeholder} {...field} id={id} className={cn(field_classnames)} disabled={disabled} type={input_type} value={field.value ? field.value : ''} onBlur={(e)=>{
                 field.onChange(e);
                 on_change?.(e.target.value);
+               log(form_state,'Current form state'); 
+                set_form_state?.(prev=>({...prev,[name]:e.target.value}));
+                //if(set_form_state && form_state){
+                 // set_form_state?.(prev=>({...prev,[name]:e.target.value}));
+                //}
               }} />
             </FormControl>
             {icon && icon}
@@ -92,7 +99,7 @@ interface FormFieldComponentPropsDefault< T extends Record<string,any>,U extends
   validators:Validation<U>;
   name: keyof T & string;
   placeholder: string | undefined;
-  description?: string;
+  description?: string; 
   label?: string;
   className?: string;
   input_type?: string;
@@ -130,19 +137,19 @@ export const FormTextFieldDefault = < T extends Record<string,any>,U extends Rec
   validators,
   contentEditable,
   on_change,
-  setFormObject, // Receive the setter function
+  setFormObject, 
   setErrorObject,
 }: FormFieldComponentPropsDefault<T,U>) => {
   // Function to update the form_object
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const validate = validators[name as keyof U](value)
-    setFormObject(prev => ({ ...prev, [name as string]: value })); // Update the specific field in your object
+    setFormObject(prev => ({ ...prev, [name as string]: value })); 
     setErrorObject(prev => ({...prev,[name]:validate}));
-    on_change?.(value,name); // Call the external onChange if provided
+    on_change?.(value,name); 
   };
 
-  // Get the current value from your form_object
+  
   const fieldValue = form_object[name as keyof T] as string | undefined;
   const error = error_object[name as keyof U] as string | undefined;
 
@@ -286,7 +293,7 @@ export const FormNumberDefault = <T extends Record<string,any>,U extends Record<
     on_change?.(displayed_value,name);
   }
   const fieldValue = form_object[name as keyof T] ? form_object[name as keyof T] : undefined; 
-  const error = error_object[name as keyof U] as string | undefined; 
+  const error = error_object[name as keyof U] as string || undefined; 
   return (
     <div className={cn(className)}>
       {label && <label htmlFor={id} className={label_classname}>{label}</label>}

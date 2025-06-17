@@ -14,9 +14,10 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { get_form_data, RRFormDynamic } from '@/components/rr-form-mod-test';
+import { get_form_data, RRFormDynamic, type FormElement, type FormElementDefault } from '@/components/rr-form-mod-test';
 import { Toasting } from '@/components/loader/loading-anime';
 import SwitchComponent from '@/components/switch-component';
+import { log } from '@/lib/utils';
 
 
 
@@ -81,7 +82,7 @@ const updateWalletSchema = z.object({
 const SettingsPage: React.FC<PageProps> = ({ settings,session }) => {
 
     const [settings_state, set_settings_state] = useState(settings);
-    const [flash_session,set_flash_session] = useState('page_loaded');
+    //const [flash_session,set_flash_session] = useState('page_loaded');
       const { general, notifications, wallets } = settings_state;
       const submit = useSubmit();
       const navigation = useNavigation();
@@ -106,6 +107,7 @@ const SettingsPage: React.FC<PageProps> = ({ settings,session }) => {
       useEffect(() => {
         //set_flash_session(session);
         if(navigation.state === 'loading' && navigation.formAction?.includes('api/delete-wallet') && navigation.formMethod === 'DELETE'){
+            //console.log(navigation.formData);
             Toasting.success('Wallet has been deleted successfully',10000);
         }
         //log(navigation,'Navigation data');
@@ -137,7 +139,12 @@ const SettingsPage: React.FC<PageProps> = ({ settings,session }) => {
           undefined,
           undefined,
           'w-full',
-          'bg-gray-700 border-gray-600 text-white focus-visible:ring-amber-300'
+          'bg-gray-700 border-gray-600 text-white focus-visible:ring-amber-300',
+          undefined,
+          navigation.state === 'submitting',
+          undefined,
+          undefined,
+          undefined,
         ),
         get_form_data(
           'select',
@@ -173,6 +180,9 @@ const SettingsPage: React.FC<PageProps> = ({ settings,session }) => {
         ),
       ];
       const [form_state, set_form_state] = useState(form_data);
+       useEffect(()=>{
+        log(form_state,'Form state value');
+       },[form_state])
     
       useEffect(() => {
         if (editingWalletId) {
@@ -328,7 +338,7 @@ const SettingsPage: React.FC<PageProps> = ({ settings,session }) => {
                     </CardContent>
                 </Card>
 
-                {/* Wallet Management Section */}
+                
                 <Card className="bg-gray-800 p-6 border border-amber-300/50">
                     <CardHeader>
                         <CardTitle className="text-xl font-bold text-amber-300">Wallet Management</CardTitle>
@@ -352,7 +362,8 @@ const SettingsPage: React.FC<PageProps> = ({ settings,session }) => {
                                     return {valid:wallets.findIndex(e=>e.label.toLocaleLowerCase().trim() === (label as string).trim().toLocaleLowerCase())< 0,error:`${label} has already been registered`,path:'label'}
                                 }}
                                 submitForm={on_submit}
-                                on_change={on_form_change}
+                                set_form_elements={set_form_state}
+                                //on_change={on_form_change}
                                 className="space-y-6 p-0 md:p-0 flex flex-wrap gap-4 items-center"
                                 notify={(notify) => {
                                     Toasting.error(notify, 10000);

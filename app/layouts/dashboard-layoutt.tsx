@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Outlet, NavLink, useLocation } from 'react-router';
+import { Outlet, NavLink, useLocation, useNavigation, Form } from 'react-router';
 import { Button } from '@/components/ui/button';
-import { Menu, User, DollarSign, History, Settings, MessageSquare, X, Wallet, TrendingUp } from 'lucide-react';
+import { Menu, User, DollarSign, History, Settings, MessageSquare, X, Wallet, TrendingUp, Loader2 } from 'lucide-react';
 import { getSess } from './app-layout';
 import type { Route } from './+types/dashboard-layoutt';
 import { CIFullLogoDashboard } from './logos';
@@ -10,6 +10,7 @@ import { CIFullLogoDashboard } from './logos';
 //import { Button } from './ui/button'; // Adjust path based on your setup
 //import { User, MessageSquare, Settings, X, Wallet, TrendingUp, DollarSign } from 'lucide-react';
 import { log } from '@/lib/utils';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 // Mock data (replace with real data from your backend)
 const portfolioData = [
@@ -37,7 +38,7 @@ export const loader = async ({ context }: Route.LoaderArgs) => {
 
 export default function DashboardLayout({ loaderData }: Route.ComponentProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const location = useLocation();
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -63,7 +64,7 @@ export default function DashboardLayout({ loaderData }: Route.ComponentProps) {
   const handleLogout = () => {
     console.log('User logged out');
     setDropdownOpen(false);
-  };  
+  };
 
 
 
@@ -72,9 +73,8 @@ export default function DashboardLayout({ loaderData }: Route.ComponentProps) {
       {/* Sidebar */}
       <aside
         ref={sidebarRef}
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 transform ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:translate-x-0 transition-transform duration-300 ease-in-out overflow-visible`}
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } md:translate-x-0 transition-transform duration-300 ease-in-out overflow-visible`}
       >
         <div className="sticky top-0 z-30 bg-gray-900 min-h-[120px] overflow-visible">
           <div className="p-3 max-sm:p-2 flex justify-between items-start min-h-[120px] flex-shrink-0 overflow-visible">
@@ -89,7 +89,7 @@ export default function DashboardLayout({ loaderData }: Route.ComponentProps) {
             </Button>
           </div>
 
-          { loaderData.user.role === 'user' ? <nav className="mt-[-4px] px-4">
+          {loaderData.user.role === 'user' ? <nav className="mt-[-4px] px-4">
             <NavLink
               to="/dashboard"
               onClick={toggleSidebar}
@@ -181,41 +181,41 @@ export default function DashboardLayout({ loaderData }: Route.ComponentProps) {
               <MessageSquare className="w-5 h-5 mr-2" />
               Inbox
             </NavLink>
-            </nav> 
+          </nav>
             :
             <nav className="mt-[-4px] px-4">
-            <NavLink
-              to="/dashboard/adm"
-              onClick={toggleSidebar}
-              className={({ isActive }) =>
-                `flex items-center p-2 rounded-lg ${isActive ? 'bg-amber-300 text-black' : 'text-gray-300 hover:bg-gray-800'}`
-              }
-              end
-            >
-              <DollarSign className="w-5 h-5 mr-2" />
-              Dashboard
-            </NavLink>
-            <NavLink
-              to="/dashboard/adm/profile"
-              onClick={toggleSidebar}
-              className={({ isActive }) =>
-                `flex items-center p-2 rounded-lg ${isActive ? 'bg-amber-300 text-black' : 'text-gray-300 hover:bg-gray-800'}`
-              }
-            >
-              <User className="w-5 h-5 mr-2" />
-              Profile
-            </NavLink>
-            <NavLink
-              to="/dashboard/adm/deposits"
-              onClick={toggleSidebar}
-              className={({ isActive }) =>
-                `flex items-center p-2 rounded-lg ${isActive ? 'bg-amber-300 text-black' : 'text-gray-300 hover:bg-gray-800'}`
-              }
-            >
-              <User className="w-5 h-5 mr-2" />
-              Deposit
-            </NavLink>
-            {/*<NavLink
+              <NavLink
+                to="/dashboard/adm"
+                onClick={toggleSidebar}
+                className={({ isActive }) =>
+                  `flex items-center p-2 rounded-lg ${isActive ? 'bg-amber-300 text-black' : 'text-gray-300 hover:bg-gray-800'}`
+                }
+                end
+              >
+                <DollarSign className="w-5 h-5 mr-2" />
+                Dashboard
+              </NavLink>
+              <NavLink
+                to="/dashboard/adm/profile"
+                onClick={toggleSidebar}
+                className={({ isActive }) =>
+                  `flex items-center p-2 rounded-lg ${isActive ? 'bg-amber-300 text-black' : 'text-gray-300 hover:bg-gray-800'}`
+                }
+              >
+                <User className="w-5 h-5 mr-2" />
+                Profile
+              </NavLink>
+              <NavLink
+                to="/dashboard/adm/deposits"
+                onClick={toggleSidebar}
+                className={({ isActive }) =>
+                  `flex items-center p-2 rounded-lg ${isActive ? 'bg-amber-300 text-black' : 'text-gray-300 hover:bg-gray-800'}`
+                }
+              >
+                <User className="w-5 h-5 mr-2" />
+                Deposit
+              </NavLink>
+              {/*<NavLink
               to="/dashboard/subscribe"
               className={({ isActive }) =>
                 `flex items-center p-2 rounded-lg ${isActive ? 'bg-amber-300 text-black' : 'text-gray-300 hover:bg-gray-800'}`
@@ -278,8 +278,8 @@ export default function DashboardLayout({ loaderData }: Route.ComponentProps) {
               <MessageSquare className="w-5 h-5 mr-2" />
               Inbox
             </NavLink>*/}
-          </nav>
-        }
+            </nav>
+          }
         </div>
       </aside>
 
@@ -296,9 +296,9 @@ export default function DashboardLayout({ loaderData }: Route.ComponentProps) {
             <Menu className="w-6 h-6" />
           </Button>
           <div className="text-amber-300 font-semibold">Welcome, {loaderData.user.name?.split(' ')[0]}</div>
-          
-      <Header investable={loaderData.account?.investable!} earnings={loaderData.account?.earnings!} investments={loaderData.account?.investments!} />
-    
+
+          <Header investable={loaderData.account?.investable!} earnings={loaderData.account?.earnings!} investments={loaderData.account?.investments!} role={loaderData.user.role as 'user'|'admin'} />
+
         </header>
         {/* Main content with padding to avoid overlap */}
         <div className="pt-16 md:ml-64">
@@ -316,6 +316,7 @@ interface HeaderDropdownProps {
   currentInvestmentTotal: number;
   investableBalance: number;
   handleLogout: () => void;
+  role:'user'|'admin'
 }
 
 export function HeaderDropdown({
@@ -323,9 +324,13 @@ export function HeaderDropdown({
   currentInvestmentTotal,
   investableBalance,
   handleLogout,
+  role
 }: HeaderDropdownProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigation = useNavigation();
+
+  const isSubmitting = navigation.state === 'submitting';
 
   const toggleDropdown = () => {
     setDropdownOpen((prev) => !prev);
@@ -409,41 +414,72 @@ export function HeaderDropdown({
             <Settings className="w-4 h-4 mr-2" />
             Settings
           </NavLink>
-          <button
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <button className="flex items-center w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700">
+                <X className="w-4 h-4 mr-2" />
+                Logout
+              </button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-800 text-gray-100 border-amber-300/50">
+              <DialogHeader>
+                <DialogTitle className="text-white">Are you sure?</DialogTitle>
+                <DialogDescription className="text-gray-300">
+                  You'll have to log back in to access your earnings and wallet information
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                {/*<DialogCancel className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white">Cancel</AlertDialogCancel>*/}
+                {/* Form to trigger the delete action when confirmed */}
+                <Form method="POST" action={`/api/logout`} preventScrollReset={true}>
+                  <input type="hidden" name="role" value={role} />
+
+                  <Button type="submit" className="bg-red-500 text-white hover:bg-red-600" disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="animate-spin" />}
+                    {isSubmitting  ? 'Logging out...' : 'Log out'}
+                  </Button>
+                </Form>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/*<button
             className="flex items-center w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700"
-            onClick={handleLogout}
+            
           >
             <X className="w-4 h-4 mr-2" />
             Logout
-          </button>
+          </button>*/}
         </div>
       )}
     </div>
   );
 }
 
-const Header = ({investments,investable,earnings}:{investments:number,investable:number,earnings:number}) => {
+const Header = ({ investments, investable, earnings, role }: { investments: number, investable: number, earnings: number, role:'user'|'admin' }) => {
   const handleLogout = () => {
     console.log('User logged out');
   };
 
-  const [totalInvestableBalance,set_total] = useState<number>(earnings || 0);
-  const [currentInvestmentTotal,set_investment] = useState<number>(investments || 0);
-  const [investableBalance,set_investable] = useState<number>(investable || 0);
+  const [totalInvestableBalance, set_total] = useState<number>(earnings || 0);
+  const [currentInvestmentTotal, set_investment] = useState<number>(investments || 0);
+  const [investableBalance, set_investable] = useState<number>(investable || 0);
 
-  useEffect(()=>{
+  useEffect(() => {
     set_total(totalInvestableBalance);
     set_investable(investableBalance);
     set_investment(currentInvestmentTotal);
-  },[totalInvestableBalance,currentInvestmentTotal,investableBalance])
+  }, [totalInvestableBalance, currentInvestmentTotal, investableBalance])
 
   return (
     <HeaderDropdown
-          totalInvestableBalance={totalInvestableBalance}
-          currentInvestmentTotal={currentInvestmentTotal}
-          investableBalance={investableBalance}
-          handleLogout={handleLogout}
-        />
-    
+      totalInvestableBalance={totalInvestableBalance}
+      currentInvestmentTotal={currentInvestmentTotal}
+      investableBalance={investableBalance}
+      handleLogout={handleLogout}
+      role={role}
+    />
+
   );
 };
