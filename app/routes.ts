@@ -47,6 +47,7 @@ export default [
     route("api/adm/deposit",'routes/api/adm-deposit.tsx'),
     route("api/logout",'routes/api/logout.tsx'),
     route("api/profile",'routes/api/profile.tsx'),
+    route("api/process-deposit",'routes/api/process-deposit.tsx'),
   ]),
   
   

@@ -66,7 +66,7 @@ const DashboardProfile: React.FC<PageProps> = ({user}) => {
        user_password:''
      },
      mode:'all',
-       resetOptions: {
+     resetOptions: {
            keepDirtyValues: true, 
            keepErrors: true,
        },
@@ -80,6 +80,7 @@ const DashboardProfile: React.FC<PageProps> = ({user}) => {
             newPassword: '',
             confirmNewPassword: '',
         },
+
         mode:'onChange',
          
           resetOptions: {
@@ -139,12 +140,6 @@ const DashboardProfile: React.FC<PageProps> = ({user}) => {
                     encType='application/x-www-form-urlencoded' 
                  
                   onSubmit={(e)=>{
-                    //console.log(profileForm.formState.errors);
-                    //console.log(profileForm.formState.isValid);
-                    //console.log(actionData);
-                    //console.log(navigation.formData);
-                    //console.log(navigation.formAction);
-                    //console.log(navigation.location);
                     if(profileForm.formState.errors.email || profileForm.formState.errors.user_password || profileForm.formState.errors.name){
                         e.preventDefault();
                     }

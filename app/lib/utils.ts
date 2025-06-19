@@ -60,6 +60,110 @@ export async function extract_body(request:Request){
     return read_body;
 }
 
+export const is_binary_file = (response:Response)=>{
+    //console.log('Response type\n',response.headers.get('Content-Type'));
+    const headers = ['image/','application/','text/','audio/','video/','application/vnd','application/octet-stream'];
+    return headers.some(e=>response.headers.get('Content-Type')?.startsWith(e) && response.headers.get('Content-Type') !== 'application/json');
+  }
+
+  export const evaluate_file_extension = (response:Response) =>{
+    const content_type = response.headers.get('Content-Type');
+    if(!content_type)
+      return '';
+    if(content_type === 'image/svg+xml'){
+      return 'svg';
+    }
+    else{
+      const exts = content_type.split('/');
+      return exts[exts.length - 1];
+    }
+  }
+
+export const fetch_request_mod = async <T>(method:'POST'|'GET'|'PATCH'|'DELETE',action:string,body?:string|FormData|any|null,is_json?:boolean,binary?:{
+    display:'text'|'object_url'|'body'|'download',
+    extension?:string;
+  }): Promise<{
+    data?:any,
+    served?:T,
+    is_error?:boolean,
+    status?:number
+  }> => {
+    console.log({body,is_json,method});
+    try {
+        if(method === 'POST' || method === 'PATCH'){
+                body = body instanceof FormData || typeof body == 'string' || body instanceof URLSearchParams ? body :  JSON.stringify(body);
+        }
+        const response = is_json ? await fetch(action,{method,body,headers:{'Content-Type':'application/json'}}) : method === 'GET' || method === 'DELETE' ? await fetch(action,{method}) : await fetch(action,{method,body});
+        const {status,statusText,ok} = response.clone(); 
+        console.log({status,statusText,ok});
+        if(!ok || status !== 200){
+            //console.log(await response.text());
+            if(statusText)
+            return { is_error:true,data:statusText,status };
+            return {is_error:true,status,data:'Unspecified error'}
+        }
+        if(is_binary_file(response.clone())){
+          if(binary?.display === 'body'){
+            return {data:response.body,status};
+          }else {
+
+          let chunks = [];
+          let total_length = 0;
+          const reader = response.body?.getReader();
+          while(true){
+            const {value,done} = (await reader?.read())!;
+            if(done){
+              break;
+            }
+            chunks.push(value);
+            total_length+=value.length;
+          }
+          
+          if(binary?.display === 'text'){
+            let uint8array = new Uint8Array(total_length);
+            let offset = 0;
+            for (const chunk of chunks) {
+              uint8array.set(chunk,offset);
+              offset += chunk.length;
+            }
+            const text_decoder = new TextDecoder('utf-8');
+            return {data:text_decoder.decode(uint8array)};
+          }
+          const blob = new Blob(chunks,{type:response.headers.get('Content-Type') as string});
+          //console.log('Blob data \n',blob);
+          const url = URL.createObjectURL(blob);
+          if(binary?.display === 'download'){
+            const a = document.createElement('a');
+            a.href = url;
+            if(binary.extension)
+            a.download = `download_file.${binary.extension}`;
+            else
+            a.download = `download_file.${evaluate_file_extension(response)}`;
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            return {data:null,status};
+          }
+          return {data:url,status};
+          }
+          
+        }else{
+
+          const contentType = response.headers.get("Content-Type");
+          if (!contentType?.includes("application/json")) {
+            return {served:await response.text() as T,status};
+          }
+            return {served:await response.json(),status};
+        }
+        
+    } catch (error) {
+      console.log('Error during fetch\n',error);
+        return {is_error:true,data:null}
+    }
+}
+
 export async function sign_response(data:string){
     const { createSign } = await import('node:crypto');
     const signer = createSign('RSA-SHA256');
@@ -106,7 +210,7 @@ export function generateSecureRandomString(length:number) {
     const charsLength = chars.length;
     const randomValues = new Uint32Array(length);
     //if(window && typeof window !== 'undefined'){
-    window.crypto.getRandomValues(randomValues);
+    //window.crypto.getRandomValues(randomValues);
     let result = '';
     for (let i = 0; i < length; i++) {
       result += chars[randomValues[i] % charsLength];
@@ -396,7 +500,7 @@ export class NumberFormat  {
                 const {data} = await response.json();
                 
                 console.log(data);
-                return {is_error:!data.logged,data:data[server_key] as T};
+                return {is_error:!!data.logged,data:data[server_key] as T};
             } catch (error) {
                 return {is_error:true,data:null}
             }

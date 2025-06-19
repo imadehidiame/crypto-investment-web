@@ -68,32 +68,98 @@ export const action = async ({request,params,context}:Route.ActionArgs)=>{
     if(request.headers.get('content-type') && request.headers.get('content-type')?.includes('application/json')){
         const user_id = getSess(context);
 
-      const {address_in,address_out,callback_url,estimated_fee,encoded_callback_url,estimated_fee_fiat,coin,deposit} = await request.json();
-        //Payment
-      const payment = await Payment.create({
+      const {address_in,address_out,callback_url,estimated_fee,encoded_callback_url,estimated_fee_fiat,coin,value_coin,deposit} = await request.json();
+      //console.log({address_in,address_out,callback_url,estimated_fee,encoded_callback_url,estimated_fee_fiat,coin,deposit});
+      console.log({
         address_in,
         address_out,
         callback_url,//:decodeURIComponent(callback_url),
         estimated_fee,
         estimated_fee_fiat,
         coin,
+        value_coin,
         encoded_callback_url,
         userId:user_id?.user?._id,
         pending:-1,
         deposit
-      });
-
-      await Activity.insertOne({
-        userId:user_id?.user?._id,
-        type:'Deposit',
-        amount:deposit,
-        status:'Pending',
-        payment_id:payment._id.toString(),
-        description:`$${deposit} deposit`
       })
+        //Payment
+        /**
+         {
+             userId: {type: mongoose.Types.ObjectId,index:true,ref:'User',required:true},
+             encoded_callback_url:{type:String,required:false},
+             deposit:{type:Number,required:false},
+             address_in: { type: String, required: false },
+             callback_url: { type: String, required: false, index: true },
+             estimated_fee: { type: Number, required: false },
+             estimated_fee_fiat: { type: Number, required: false },
+             //exchange_rate: { type: Number, required: false },
+             //coin_to_transfer: { type: String, required: false },
+             uuid: { type: String, required: false },
+             address_out: { type: String, required: false },
+             txid_in: { type: String, required: false },
+             txid_out: { type: String, required: false },
+             confirmations: { type: Number, required: false },
+             value_coin: { type: Number, required: false },
+             value_coin_convert: { type: Number, required: false },
+             coin: { type: String, required: false },
+             current_price: { type: Number, required: false },
+             value_forwarded_coin: { type: Number, required: false },
+             value_forwarded_coin_convert: { type: Number, required: false },
+             fee_coin: { type: Number, required: false },
+             price: { type: Number, required: false },
+             pending: { type: Number, required: false },
+             status: {type: Number, required: true, default:-1}
+           }
+         */
 
-      //if(payment.acknowledged){
-        return Response.json({data:payment.insertedId.toString()},{status:200,headers:{'Content-Type':'application/json'}});
+        try {
+
+            const payment = await Payment.create({
+                address_in,
+                address_out,
+                callback_url,//:decodeURIComponent(callback_url),
+                estimated_fee,
+                estimated_fee_fiat,
+                coin,
+                value_coin,
+                encoded_callback_url,
+                userId:user_id?.user?._id,
+                pending:-1,
+                deposit
+              });
+
+              
+        
+              /**
+               const payment = await Payment.create({
+                       coin,
+                       value_coin,
+                       userId,
+                       pending:-1,
+                       deposit
+                     }); 
+               */
+        
+              await Activity.insertOne({
+                userId:user_id?.user?._id,
+                type:'Deposit',
+                amount:deposit,
+                status:'Pending',
+                payment_id:payment._id.toString(),
+                description:`$${deposit} deposit`
+              })
+        
+              //if(payment.acknowledged){
+                return Response.json({data:payment._id.toString()},{status:200,headers:{'Content-Type':'application/json'}});
+
+            
+        } catch (error) {
+            console.log(error);
+            return Response.json({error:error instanceof Error ? error.message:'An error occured along the way'},{status:400,statusText:error instanceof Error ? error.message:'An error occured along the way',headers:{'Content-Type':'application/json'}});
+        }
+
+      
       //}
 
     }else{
@@ -135,7 +201,7 @@ export const action = async ({request,params,context}:Route.ActionArgs)=>{
      
      */
     
-    const url = decodeURIComponent(callback_url as string);
+    const url = decodeURI(callback_url as string);
     const payment_update = await Payment.findOneAndUpdate({callback_url:url},send,{new:true});
     if(pend == 0){
         const deposit = typeof USD == 'string' ? parseFloat(USD) : USD;

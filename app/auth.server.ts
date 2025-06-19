@@ -45,14 +45,7 @@ export const signup = async ({username,name,password,role}:{username:string,name
     //log(is_user,'Is user value');
     if(is_user)
         return {logged:false,message:'Unfortunately the provided email already exists'};
-    log({
-        role,
-        email:username,
-        password,
-        name,
-        //createdAt:new Date(Date.now()),
-        updatedAt:new Date(Date.now())
-    },'Server request values');
+    
     const user = new User({
         role,
         email:username,

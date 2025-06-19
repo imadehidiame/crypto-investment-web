@@ -11,7 +11,7 @@ import { Toasting } from '@/components/loader/loading-anime';
 import { Loader2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { NumberFormat } from '@/components/number-field';
-import { extract_date_time, generateSecureRandomString, log } from '@/lib/utils';
+import { extract_date_time, fetch_request_mod, generateSecureRandomString, log } from '@/lib/utils';
 import { CURRENCIES } from '@/lib/config/crypt_api';
 import { FormNumberDefault, FormSelectDefault, FormTextFieldDefault } from '@/components/form-components';
 
@@ -100,10 +100,10 @@ const DepositPage: React.FC<PageProps> = ({ deposits,userId }) => {
   const process_deposit = async(type:'btc'|'eth',deposit:number)=>{
     set_is_submitting(true);
     const { btc,btc_,eth,eth_,callback_url:generate_callback_url,email,callback_url_path } = CURRENCIES;
-    const payment_id = generateSecureRandomString(15);
-    const callback_uri = generate_callback_url(userId,payment_id);
+    //const payment_id = generateSecureRandomString(15);
+    //const callback_uri = generate_callback_url(userId,payment_id);
     let url_search = new URLSearchParams({
-      callback:encodeURIComponent(callback_uri),
+      //callback:encodeURIComponent(callback_uri),
       addresses: type == 'btc' ? `0.9@${btc}|0.1@${btc_}` : `0.9@${eth}|0.1@${eth_}`,
       pending:'1',
       confirmations:'3',
@@ -115,79 +115,125 @@ const DepositPage: React.FC<PageProps> = ({ deposits,userId }) => {
       convert:'1'
     }).toString();
 
-
+//https://cinvdesk.com/api/payment-callback/78892902hdjsk899/893893hskksksGHGS`
  //GET payin address 
-let resp = await fetch(
+/*let resp = await fetch(
   `https://api.cryptapi.io/${type}/create/?${url_search}`,
   {method: 'GET'}
-);
-log(resp,'Create Address In Response');
-const {address_in,address_out} = await resp.json();
-set_address(address_in);
+);*/
 
-  if(resp.status !== 200){
-    //const {address_in,address_out} = await resp.json();
-    return;
-  }
+let { status,served,data:served_data } = await fetch_request_mod<{
+  error?:string,
+  status:string,
+  address_in?:string,
+  address_out?:any
+  payment_id?:string;
+}>('POST','/api/process-deposit',JSON.stringify({flag:'address',type}),true);
+
+if(status !== 200){
+  Toasting.error(served_data ? served_data : 'An error occured along the way',10000);
+  set_is_submitting(false);
+  return;
+}
+
+log({status,served},'Create Address In Response');
+set_is_submitting(false);
+//return;
+const {address_in,address_out,payment_id} = served!;
+set_address(address_in as string);
+  
 
   //get converted prices
-  url_search = new URLSearchParams({
-    value:deposit.toString(),
-    from:'USD'
-  }).toString()
-  resp = await fetch(
-    `https://api.cryptapi.io/${type}/convert/?${url_search}`,
-    {method: 'GET'}
-  );
-  log(resp,'Get converted prices Response');
-  if(resp.status !== 200){
-    return;
-  }
-
-  const {value_coin} = await resp.json();
-
-  //Get QR code
-  url_search = new URLSearchParams({
-    address:address_in,
-    size:'320',
-    value:(value_coin).toString()
-  }).toString()
   
-  resp = await fetch(
-    `https://api.cryptapi.io/${type}/qrcode/?${url_search}`,
-    {method: 'GET'}
-  );
-  log(resp,'QR response');
-  if(resp.status !== 200){
-    //do something about error
+
+  let { status:status_price,served:served_price,data:data_price } = await fetch_request_mod<{
+    error?:string,
+    status:string,
+    value_coin?:string;
+    //address_in?:string,
+    //address_out?:string
+  }>('POST','/api/process-deposit',JSON.stringify({flag:'prices',deposit,type}),true);
+  
+  if(status_price !== 200){
+    Toasting.error(data_price ? data_price : 'An error occured along the way when pulling price data',10000);
+    set_is_submitting(false);
     return;
   }
-  const { qr_code } = await resp.json();
-  set_qr_code(qr_code);
 
+  
+  
+
+  const {value_coin} = served_price!;
+  
+  //Get QR code
+  
+
+  let { status:status_qr_code,served:served_qr_code,data:data_qr_code } = await fetch_request_mod<{
+    error?:string,
+    status:string,
+    qr_code?:string;
+    //address_in?:string,
+    //address_out?:string
+  }>('POST','/api/process-deposit',JSON.stringify({flag:'qr_code',value_coin,address_in:address_in,type}),true);
+  
+  
+  
+  if(status_qr_code !== 200){
+    Toasting.error(data_qr_code ? data_qr_code : 'An error occured along the way when pulling QR code data',10000);
+    set_is_submitting(false);
+    return;
+  }
+  const { qr_code } = served_qr_code!
+  set_qr_code(qr_code!);
+  
 
   //Estimate blockchain fees
-  url_search = new URLSearchParams({
-    addresses:'2',
-    priority:'default'
-  }).toString()
-  resp = await fetch(
-    `https://api.cryptapi.io/${type}/estimate/?${url_search}`,
-    {method: 'GET'}
-  );
-  log(resp,'Blockchain fee Response');
-  if(resp.status !== 200){
-    //do something about error
+  let { status:status_blockchain_fees,served:served_blockchain_fees,data:data_blockchain_fees } = await fetch_request_mod<{
+    error?:string,
+    status:string,
+    estimated_cost?:string;
+    estimated_cost_currency?:{
+      USD?:string
+    }
+    //address_in?:string,
+    //address_out?:string
+  }>('POST','/api/process-deposit',JSON.stringify({flag:'blockchain_fees',type}),true);
+  
+  
+  //log(resp,'Blockchain fee Response');
+  if(status_blockchain_fees !== 200){
+    Toasting.error(data_blockchain_fees ? data_blockchain_fees : 'An error occured along the way when pulling blockchain data',10000);
+    set_is_submitting(false);
     return;
   }
-  const {estimated_cost:estimated_fee,estimated_cost_currency} = await resp.json()
-  const { USD:estimated_fee_fiat } = estimated_cost_currency;
+  const {estimated_cost:estimated_fee,estimated_cost_currency} = served_blockchain_fees!;
+  const { USD:estimated_fee_fiat } = estimated_cost_currency!;
 
-  resp = await fetch(callback_url_path(userId,payment_id),{method:"POST",body:JSON.stringify({
+  const callback_url_mod = generate_callback_url(userId,payment_id!);
+  
+  let { status:status_local,served:served_local,data:data_local } = await fetch_request_mod<{
+    error?:string,
+    status:string,
+    data?:string
+    //address_in?:string,
+    //address_out?:string
+  }>('POST',callback_url_path(userId,payment_id!),JSON.stringify({
+    estimated_fee_fiat:parseFloat(estimated_fee_fiat!),
+    estimated_fee:parseFloat(estimated_fee!),
+    callback_url:callback_url_mod,
+    encoded_callback_url:encodeURI(callback_url_mod),
+    address_in,
+    address_out:JSON.stringify(address_out),
+    value_coin:parseFloat(value_coin!),
+    deposit,
+    coin:type
+  }),true);
+  
+  /*await fetch(callback_url_path(userId,payment_id!),{method:"POST",body:JSON.stringify({
     estimated_fee_fiat,
     estimated_fee,
-    callback_url:callback_uri,
-    encoded_callback_url:encodeURI(callback_uri),
+    callback_url:callback_url_mod,
+    encoded_callback_url:encodeURI(callback_url_mod),
     address_in,
     address_out,
     value_coin,
@@ -195,20 +241,34 @@ set_address(address_in);
     coin:type
   }),headers:{
     'content-type':'application/json' 
-  }})
-  log(resp,'Final Response');
-   if(resp.status !== 200){
+  }})*/
+
+    /*{
+      "estimated_fee_fiat": 0.73,
+      "estimated_fee": 0.000286002,
+      "callback_url": "https://cinvdesk.com/api/payment-callback/6824d1fc45bc31da8eeb5c5d/46cf000a-466c-41aa-a239-78ea2f44eaed",
+      "encoded_callback_url": "https://cinvdesk.com/api/payment-callback/6824d1fc45bc31da8eeb5c5d/46cf000a-466c-41aa-a239-78ea2f44eaed",
+      "address_in": "0xd8cc26f755bAF06097be0f543033d601e0aB9736",
+      "address_out": "{\"0xF0cac124Bb03f9EFBe308390EF488d98f1007334\":\"0.9000\",\"0xb74C634dcF3a86B7A340e8CE2FE7D832C8A5C3b8\":\"0.1000\"}",
+      "value_coin": 0.901781,
+      "deposit": 2300,
+      "coin": "eth"
+  }*/
+  
+  if(status_local !== 200){
+    Toasting.error(data_local ? data_local : 'An error occured along the way when saving deposit data',10000);
+    set_is_submitting(false);
     return;
-   }
-   const {data} = await resp.json();
+  }
+   const {data} = served_local!;
    const dep:Deposit = {
-    _id:data,
+    _id:data!,
     coin:type,
     createdAt:(new Date),
     updatedAt:(new Date),
     deposit,
     status:-1,
-    value_coin
+    value_coin: parseFloat(value_coin!)
    }
    set_deposit_state(prev=>([...prev,dep]));
    Toasting.success('Deposit has been initiated. Please make your deposit to the Wallet Address provided');

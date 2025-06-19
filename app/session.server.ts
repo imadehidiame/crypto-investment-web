@@ -151,8 +151,7 @@ export const getUserFromSession = async (request:Request,is_user = true) => {
     }
     const user = session.userId as DBSessionData;
     return user;
-    //return {role:user.role,email:user.email,name:user.name,id:user._id};
-    //return data
+ 
 }
 
 export const destroySession = async (request:Request,is_user = true) =>{
@@ -169,29 +168,3 @@ export const destroySession = async (request:Request,is_user = true) =>{
     } 
     return await ((await sessionStore(true,true,is_user ? Sessions.name : Sessions.adm_name)) as Cookie ).serialize('');
 }
-
-/*export const sessionStore = createSessionStorage({
-    cookie:{
-        secure:process.env.NODE_ENV === 'production',
-        sameSite:'lax',
-        name:'',
-        path:'/',
-        secrets:[''],
-        maxAge:DURATION/1000,
-        httpOnly:true,
-        
-    },
-    async createData(data, expires) {
-        const dat = Object.assign({},data);
-        return this.createData(Object.assign({},data),expires);
-    },
-    async readData(id) {
-        return this.readData(id);
-    },
-    async deleteData(id) {
-        await this.deleteData(id);
-    },
-    async updateData(id, data, expires) {
-        await this.updateData(id,data,expires);
-    },
-})*/
