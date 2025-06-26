@@ -99,7 +99,7 @@ export const fetch_request_mod = async <T>(method:'POST'|'GET'|'PATCH'|'DELETE',
         if(!ok || status !== 200){
             //console.log(await response.text());
             if(statusText)
-            return { is_error:true,data:statusText,status };
+            return { is_error:true,data:statusText,status }; 
             return {is_error:true,status,data:'Unspecified error'}
         }
         if(is_binary_file(response.clone())){
@@ -127,7 +127,7 @@ export const fetch_request_mod = async <T>(method:'POST'|'GET'|'PATCH'|'DELETE',
               offset += chunk.length;
             }
             const text_decoder = new TextDecoder('utf-8');
-            return {data:text_decoder.decode(uint8array)};
+            return {data:text_decoder.decode(uint8array),is_error:false};
           }
           const blob = new Blob(chunks,{type:response.headers.get('Content-Type') as string});
           //console.log('Blob data \n',blob);
@@ -144,18 +144,18 @@ export const fetch_request_mod = async <T>(method:'POST'|'GET'|'PATCH'|'DELETE',
             a.click();
             URL.revokeObjectURL(url);
             document.body.removeChild(a);
-            return {data:null,status};
+            return {data:null,status,is_error:false};
           }
-          return {data:url,status};
+          return {data:url,status,is_error:false};
           }
           
         }else{
 
           const contentType = response.headers.get("Content-Type");
           if (!contentType?.includes("application/json")) {
-            return {served:await response.text() as T,status};
+            return {served:await response.text() as T,status,is_error:false};
           }
-            return {served:await response.json(),status};
+            return {served:await response.json(),status,is_error:false};
         }
         
     } catch (error) {

@@ -1,4 +1,4 @@
-import { fetch_request_mod, generateSecureRandomString } from "@/lib/utils";
+import { fetch_request_mod, generateSecureRandomString, log } from "@/lib/utils";
 import type { Route } from "./+types/process-deposit";
 import { getSess } from "@/layouts/app-layout";
 import { CURRENCIES } from "@/lib/config/crypt_api";
@@ -37,6 +37,7 @@ export const action = async ({request,context}:Route.ActionArgs)=>{
               convert:'1'
             }).toString();
 
+            log(url_search,'API URL');
             
         
        
@@ -49,11 +50,12 @@ export const action = async ({request,context}:Route.ActionArgs)=>{
         }
         
         const {data,is_error,status,served} = await fetch_request_mod<T>('GET',`https://api.cryptapi.io/${type}/create/?${url_search}`);
+        log({data,is_error,status,served},'Server response');
         
-        if(status == 200 && !is_error){
-            return Response.json({...served,payment_id},{status:200});
+        if(status === 200 && is_error === false){
+            return Response.json({...served,payment_id},{status:200}); 
         }else{
-            return Response.json({error:served?.error},{status:400,statusText:served?.error});
+            return Response.json({error:served?.error},{status:400,statusText:served?.error}); 
         }
     }else if(flag === 'prices'){
         let url_search = new URLSearchParams({
