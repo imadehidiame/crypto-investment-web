@@ -1,7 +1,7 @@
 import { getSess } from "@/layouts/app-layout";
 import DepositPage, { type Deposit } from "@/components/dashboard-views/user/deposit";
 import type { Route } from "./+types/dashboard-deposit";
-import Payment from "@/models/Payment.server";
+
 
 
 
@@ -16,6 +16,7 @@ import Payment from "@/models/Payment.server";
  */
 
 export const loader = async ({context}:Route.LoaderArgs) =>{
+    const Payment = (await import('@/models/Payment.server')).default;
     const user = getSess(context);
     //let transactions  = await Activity.find({userId:user?.user?._id});
     let transactionss = await Payment.find({ userId: user?.user?._id })
