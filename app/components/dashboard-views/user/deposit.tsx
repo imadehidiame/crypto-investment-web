@@ -53,27 +53,28 @@ export interface Deposit {
 interface PageProps {
   deposits: Deposit[];
   userId:string;
+  currencies:CryptoData[];
+  prices:{btc:number,eth:number}
 }
 
-const DepositPage: React.FC<PageProps> = ({ deposits,userId }) => {
+const DepositPage: React.FC<PageProps> = ({ deposits,userId,currencies,prices }) => {
   const navigation = useNavigation();
   const navigate = useNavigate();
   const submit = useSubmit();
   const [isSubmitting,set_is_submitting] = useState(false);
   const [qr_code, set_qr_code] = useState('');
   const [deposit_state,set_deposit_state] = useState<typeof deposits>(deposits);
-  const [currencies, set_currencies] = useState<CryptoData[]>([]);
+  //const [currencies, set_currencies] = useState<CryptoData[]>([]);
   const [address,set_address] = useState('');
-  const [prices, set_prices] = useState<{btc:number,eth:number}>({btc:0,eth:0});
+  //const [prices, set_prices] = useState<{btc:number,eth:number}>({btc:0,eth:0});
 
-  useEffect(() => {
+  /*useEffect(() => {
     const search = new URLSearchParams({
       address: 'string',
       value: '100',
       size: '512',
     });
-    // Note: This useEffect seems incomplete; consider implementing QR code fetching logic if needed
-  }, []);
+  }, []);*/
 
   useEffect(() => {
     const run = async () => {
@@ -82,7 +83,7 @@ const DepositPage: React.FC<PageProps> = ({ deposits,userId }) => {
       const data = await fetch_data.json();
       const { btc, eth, trc20 } = data;
       const needed_data = Object.entries({ btc, eth, trc20 });
-      set_prices({btc:parseFloat(btc.prices.USD),eth:parseFloat(eth.prices.USD)});
+      //set_prices({btc:parseFloat(btc.prices.USD),eth:parseFloat(eth.prices.USD)});
       const reduced_data = needed_data.reduce((acc, current) => {
         const [currency, currency_data] = current;
         if (currency === 'trc20') {
@@ -92,7 +93,7 @@ const DepositPage: React.FC<PageProps> = ({ deposits,userId }) => {
           return acc.concat([currency_data as CryptoData]);
         }
       }, [] as CryptoData[]);
-      set_currencies(reduced_data);
+      //set_currencies(reduced_data);
     };
     run();
   }, []);

@@ -1,21 +1,33 @@
 import { getSess } from "@/layouts/app-layout";
-import DepositPage, { type Deposit } from "@/components/dashboard-views/user/deposit";
+import DepositPage, { type CryptoData, type Deposit } from "@/components/dashboard-views/user/deposit";
 import type { Route } from "./+types/dashboard-deposit";
+import { fetch_request_mod } from "@/lib/utils";
 
-
-
-
-/**
- id: string;
-  deposit: number;
-  createdAt: Date;
-  status: number;
-  updatedAt: Date;
-  coin:string;
-  value_coin:number;
- */
 
 export const loader = async ({context}:Route.LoaderArgs) =>{
+          let currencies:CryptoData[] = []; 
+          let prices:{btc:number,eth:number} = {btc:0,eth:0};
+          const search = new URLSearchParams({ price: '1' }).toString();
+          const {data,served,status,is_error} = await fetch_request_mod<{btc:any,eth:any,trc20:any}>('GET',`https://api.cryptapi.io/info/?${search}`);
+          //const data = await fetch_data.json();
+          //console.log(served);
+          if(!is_error && status == 200){
+            const { btc, eth, trc20 } = served!;
+          const needed_data = Object.entries({ btc, eth, trc20 });
+          //set_prices({btc:parseFloat(btc.prices.USD),eth:parseFloat(eth.prices.USD)});
+          prices = {btc:parseFloat(btc.prices.USD),eth:parseFloat(eth.prices.USD)};
+          currencies = needed_data.reduce((acc, current) => {
+            const [currency, currency_data] = current;
+            if (currency === 'trc20') {
+              const data: CryptoData = currency_data.usdt;
+              return acc.concat([data]);
+            } else {
+              return acc.concat([currency_data as CryptoData]);
+            }
+          }, [] as CryptoData[]);
+          }
+          
+
     const Payment = (await import('@/models/Payment.server')).default;
     const user = getSess(context);
     //let transactions  = await Activity.find({userId:user?.user?._id});
@@ -23,23 +35,7 @@ export const loader = async ({context}:Route.LoaderArgs) =>{
                                    .select('_id deposit createdAt status updatedAt coin value_coin')
                                    //.sort({ timestamp: -1 })
                                    .lean() as unknown as Deposit[];
-    /*
-     _id: string;
-  deposit: number;
-  createdAt: Date;
-  status: number;
-  updatedAt: Date;
-  coin:string;
-  value_coin:number;
-    */
     let transactions = await Payment.aggregate<Deposit>([
-      /*{
-        $addFields:{
-          _id:{
-            $toString:'$_id'
-          }
-        }
-      },*/
       {
         $match:{
           userId:user?.user?._id
@@ -61,25 +57,12 @@ export const loader = async ({context}:Route.LoaderArgs) =>{
       
     ]);
 
-    //log(transactions,'Transactions');
-    /*transactions = transactions.filter(e=>e.type.toLocaleLowerCase() === 'deposit').map(({amount,_id,status,date})=>{
-        return {id:_id.toString(),date:date.toLocaleDateString(),amount,status};
-    })*/
-
-/*const transactionss = [ 
-        { id: '1', date: '2023-10-26', type: 'Deposit', amount: 1000.00, status: 'Completed' },
-        { id: '2', date: '2023-10-26', type: 'Investment', amount: -500.00, status: 'Completed', description: 'Bronze Plan' },
-        { id: '3', date: '2023-10-27', type: 'Earning', amount: 7.50, status: 'Completed', description: 'Bronze Plan Daily Return' },
-        { id: '4', date: '2023-10-27', type: 'Withdrawal', amount: -100.00, status: 'Pending' },
-  
-];*/
-   
-  
-  return {transactions,userId:user?.user?._id.toString()}
+    
+  return {transactions,userId:user?.user?._id.toString(),currencies,prices}
 }
 
 export default function({loaderData}:Route.HydrateFallbackProps){
   
   //if(loaderData)
-  return <DepositPage deposits={loaderData?.transactions || []} userId={loaderData?.userId!} />
+  return <DepositPage deposits={loaderData?.transactions || []} userId={loaderData?.userId!} currencies={loaderData?.currencies!} prices={loaderData?.prices!} />
 } 
