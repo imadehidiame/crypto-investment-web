@@ -128,11 +128,11 @@ let { status,served,data:served_data } = await fetch_request_mod<{
   address_in?:string,
   address_out?:any
   payment_id?:string;
-}>('POST','/api/process-deposit',JSON.stringify({flag:'address',type}),true);
+}>('POST','/api/process-deposit',JSON.stringify({flag:'address',type}),true); 
 
-if(status !== 200){
+if(status !== 200 || !served){
   Toasting.error(served_data ? served_data : 'An error occured along the way',10000);
-  set_is_submitting(false);
+  set_is_submitting(false); 
   return;
 }
 

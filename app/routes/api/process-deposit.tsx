@@ -55,7 +55,7 @@ export const action = async ({request,context}:Route.ActionArgs)=>{
         if(status === 200 && is_error === false){
             return Response.json({...served,payment_id},{status:200}); 
         }else{
-            return Response.json({error:served?.error},{status:400,statusText:served?.error}); 
+            return Response.json({error:served?.error},{status:400,statusText:served?.error});    
         }
     }else if(flag === 'prices'){
         let url_search = new URLSearchParams({
