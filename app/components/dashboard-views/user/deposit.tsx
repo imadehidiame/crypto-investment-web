@@ -76,27 +76,7 @@ const DepositPage: React.FC<PageProps> = ({ deposits,userId,currencies,prices })
     });
   }, []);*/
 
-  useEffect(() => {
-    const run = async () => {
-      const search = new URLSearchParams({ price: '1' }).toString();
-      const fetch_data = await fetch(`https://api.cryptapi.io/info/?${search}`, { method: 'GET' });
-      const data = await fetch_data.json();
-      const { btc, eth, trc20 } = data;
-      const needed_data = Object.entries({ btc, eth, trc20 });
-      //set_prices({btc:parseFloat(btc.prices.USD),eth:parseFloat(eth.prices.USD)});
-      const reduced_data = needed_data.reduce((acc, current) => {
-        const [currency, currency_data] = current;
-        if (currency === 'trc20') {
-          const data: CryptoData = currency_data.usdt;
-          return acc.concat([data]);
-        } else {
-          return acc.concat([currency_data as CryptoData]);
-        }
-      }, [] as CryptoData[]);
-      //set_currencies(reduced_data);
-    };
-    run();
-  }, []);
+  
 
   const process_deposit = async(type:'btc'|'eth',deposit:number)=>{
     set_is_submitting(true);
