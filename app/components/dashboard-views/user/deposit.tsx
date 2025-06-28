@@ -472,7 +472,7 @@ set_address(address_in as string);
                     <TableBody>
                       {deposit_state.map((tx) => (
                         <TableRow key={tx._id} className="border-gray-800 hover:bg-gray-700">
-                          <TableCell className="text-sm">{extract_date_time(tx.createdAt,false)}</TableCell>
+                          <TableCell className="text-sm">{/*extract_date_time(tx.createdAt,false)*/tx.createdAt.toDateString()}</TableCell>
                           <TableCell
                             className={`text-sm ${(tx.deposit) < 0 ? 'text-red-400' : 'text-green-400'}`}
                           >
@@ -498,7 +498,7 @@ set_address(address_in as string);
                               {tx.status === -1 ? 'Awaiting Payment' : tx.status === 0 ? 'Awaiting Confirmation' : 'Payment Confirmed' }
                             </span>
                           </TableCell>
-                          <TableCell className="text-sm">{extract_date_time(tx.updatedAt,false)}</TableCell>
+                          <TableCell className="text-sm">{/*extract_date_time(tx.updatedAt,false)*/tx.updatedAt.toDateString()}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -511,7 +511,7 @@ set_address(address_in as string);
                       <div className="space-y-2">
                         <div className="flex justify-between">
                           <span className="text-gray-400 text-sm">Date</span>
-                          <span className="text-white text-sm">{ extract_date_time(tx.createdAt,false)}</span>
+                          <span className="text-white text-sm">{ /*extract_date_time(tx.createdAt,false)*/tx.createdAt.toDateString()}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400 text-sm">Amount</span>
@@ -552,16 +552,7 @@ set_address(address_in as string);
 
                         <div className="flex justify-between">
                           <span className="text-gray-400 text-sm">Last Update</span>
-                          <span
-                            className={`text-sm ${(tx.deposit) < 0 ? 'text-red-400' : 'text-green-400'}`}
-                          >
-                            {NumberFormat.thousands(tx.deposit, {
-                              allow_decimal: true,
-                              length_after_decimal: 2,
-                              add_if_empty: true,
-                              allow_zero_start: true,
-                            })}
-                          </span>
+                          <span className="text-white text-sm">{ /*extract_date_time(tx.createdAt,false)*/tx.updatedAt.toDateString()}</span>
                         </div>
 
                       </div>
