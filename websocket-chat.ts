@@ -10,6 +10,8 @@ export function websocket_chat(): Plugin {
             const httpServer: HttpServer = isProduction
               ? createServer()
               : (viteServer.httpServer as HttpServer) || createServer();
+              console.log(`Node environment ${process.env.NODE_ENV}`);
+              console.log(`is production = ${isProduction}`);
           //const httpServer: HttpServer = viteServer.httpServer
             ///? (viteServer.httpServer as HttpServer)
             //: createServer();
