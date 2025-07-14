@@ -424,7 +424,7 @@ function is_message_thread(data:any) : data is MessageThread {
         }),
         'data'
       );
-      console.log(fetched);
+      //console.log(fetched);
       if (fetched.is_error) {
         Toasting.error('An error occurred while sending message');
       }
