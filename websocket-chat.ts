@@ -21,20 +21,24 @@ export function websocket_chat(): Plugin {
                 url: req.url,
                 headers: req.headers,
               });*/
-      
+              
               if (!isProduction && req.headers["sec-websocket-protocol"] === "vite-hmr") {
                 console.log("Ignoring Vite HMR connection");
                 ws.close(1000, "Vite HMR connection ignored");
                 return;
               }
-
+            
+              console.log('Connection initiated');
             
             if (!req.url) {
               console.error("Request URL is undefined");
               ws.close(1008, "Missing URL"); 
               return;
             }
+            console.log('Url is '+req.url);
+            console.log(`Request host header = ${req.headers.host}`)
             const url = new URL(req.url, `http://${req.headers.host || "localhost:4003"}`);
+            console.log(url);
             const userId = url.searchParams.get("userId");
             const flag = url.searchParams.get('flag');
             const is_chat = flag && flag === 'chat';
@@ -45,6 +49,7 @@ export function websocket_chat(): Plugin {
             }
             clients.set(userId, ws);
             const channel =  is_chat ? `chat:${userId}` : `livechat:${userId}`;
+            console.log('Time to subscribe to channel');
             subscribe_to_channel(channel, (message) => {
               if (ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify(message));
@@ -60,7 +65,7 @@ export function websocket_chat(): Plugin {
         if (!viteServer.httpServer || isProduction) {
             return () => {
               httpServer.listen(4003, "0.0.0.0", () => {
-                console.log(`WebSocket server running on ${isProduction ? "ws" : "ws"}://0.0.0.0:4003`);
+                console.log(`WebSocket server running on ws://0.0.0.0:4003`);
               });
             };
           }
