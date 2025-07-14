@@ -88,7 +88,7 @@ export const fetch_request_mod = async <T>(method:'POST'|'GET'|'PATCH'|'DELETE',
     is_error?:boolean,
     status?:number
   }> => {
-    console.log({body,is_json,method});
+    //console.log({body,is_json,method});
     try {
         if(method === 'POST' || method === 'PATCH'){
                 body = body instanceof FormData || typeof body == 'string' || body instanceof URLSearchParams ? body :  JSON.stringify(body);
@@ -97,10 +97,10 @@ export const fetch_request_mod = async <T>(method:'POST'|'GET'|'PATCH'|'DELETE',
         const {status,statusText,ok} = response.clone(); 
         console.log({status,statusText,ok});
         if(!ok || status !== 200){
-            //console.log(await response.text());
+            //console.log(await response.text()); 
             if(statusText)
-            return { is_error:true,data:statusText,status }; 
-            return {is_error:true,status,data:'Unspecified error'}
+            return { is_error:true,data:statusText,status };  
+            return {is_error:true,status,data:'Unspecified error'}; 
         }
         if(is_binary_file(response.clone())){
           if(binary?.display === 'body'){
@@ -203,6 +203,18 @@ export function generateRandomString(length:number) {
         : use_full_data ? date.toDateString() + ' ' : date.toLocaleDateString()+' ';
     }
     return dating + date.toTimeString().split(' ').slice(0, 1).join();
+  }
+
+  // app/lib/utils.ts
+export function extract_date_time_mod(date: Date, includeTime: boolean = true): string {
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      ...(includeTime && { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }),
+      timeZone: 'UTC', // Ensure consistent timezone
+    };
+    return new Date(date).toLocaleString('en-US', options);
   }
 
 export function generateSecureRandomString(length:number) {
@@ -486,21 +498,25 @@ export class NumberFormat  {
                 }
                 //log(server_data,'Served data');
                 const response = await fetch(action,{method,body:server_data,headers:{'Content-Type':'application/json'}});
+                //console.log('Response daya');
+                //console.log(response);
                 if(!response.ok || response.status !== 200){
                     console.log(await response.text());
                     if(response.statusText)
                     return { is_error:true,data:null };
                 }
                 const contentType = response.headers.get("Content-Type");
+                //console.log('Headers');
+                //console.log(response.headers);
                 if (!contentType?.includes("application/json")) {
                     console.error("Unexpected response type:", contentType);
-                    console.error(await response.text()); 
+                    //console.error(await response.text()); 
                     return {is_error:true,data:null};
                 }
                 const {data} = await response.json();
                 
-                console.log(data);
-                return {is_error:!!data.logged,data:data[server_key] as T};
+                //console.log(data);
+                return {is_error:!data.logged,data:data[server_key] as T};
             } catch (error) {
                 return {is_error:true,data:null}
             }

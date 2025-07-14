@@ -49,16 +49,16 @@ export default function AppLayout() {
 export function getSess(context: unstable_RouterContextProvider, request?: Request) {
   try {
     if (!auth_context) {
-      //console.log("auth_context is null");
+      console.log("auth_context is null");
       return null;
     }
     if (!context) { 
-      //console.log("context is null");
+      console.log("context is null");
       return null;
     }
     const session = context.get(auth_context);
     if (!session) {
-      //console.log("No session found in context");
+      console.log("No session found in context");
       return null;
     }
     //console.log("Session found:", session);

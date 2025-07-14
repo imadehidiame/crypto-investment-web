@@ -26,6 +26,7 @@ export default [
       route("dashboard/subscribe", "routes/dashboard/dashboard-subscribe.tsx"),
       route("dashboard/settings", "routes/dashboard/dashboard-settings.tsx"),
       route("dashboard/messages", "routes/dashboard/dashboard-messaging.tsx"),
+      route("dashboard/chat-test", "routes/dashboard/dashboard-chat-test.tsx"),
       route("dashboard/transactions", "routes/dashboard/dashboard-transaction-history.tsx"),
       route("dashboard/withdrawal", "routes/dashboard/dashboard-withdrawal.tsx"),
       route("dashboard/withdrawal/request/:investment_id", "routes/dashboard/dashboard-withdrawal-item.tsx"),
@@ -36,6 +37,7 @@ export default [
       route("dashboard/adm/subscription-plans", "routes/dashboard/adm/dashboard-subscribe-adm.tsx"),
       route("dashboard/adm/deposits", "routes/dashboard/adm/dashboard-deposit-adm.tsx"),
       route("dashboard/adm/messaging", "routes/dashboard/adm/dashboard-messaging-adm.tsx"),
+      route("dashboard/adm/chat-test-adm", "routes/dashboard/adm/dashboard-chat-test-adm.tsx"),
       route("dashboard/adm/transactions", "routes/dashboard/adm/dashboard-transaction-history-adm.tsx"),
       route("dashboard/adm/withdrawals", "routes/dashboard/adm/dashboard-withdrawal-adm.tsx"),
 
@@ -43,6 +45,7 @@ export default [
     route("api/settings-update", "routes/api/settings-update.tsx"), 
     route("api/delete-wallet/:wallet", "routes/api/delete-wallet.tsx"),
     route("api/chat-messaging", "routes/api/chat-messaging.tsx"),  
+    route("api/adm/chat-messaging", "routes/api/chat-messaging-adm.tsx"),  
     route("api/payment-callback/:userId/:paymentId",'routes/api/payment-callback.tsx'),
     route("api/adm/deposit",'routes/api/adm-deposit.tsx'),
     route("api/logout",'routes/api/logout.tsx'),

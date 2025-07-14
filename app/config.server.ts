@@ -13,6 +13,12 @@ export const sessionEnv = {
     }, 
     MongoDb : {
         connection_url:process.env.MONGO_DB_CONNECTION_STRING
+    },
+    Redis : {
+        password:process.env.REACT_APP_REDIS_PASSWORD,
+        url:process.env.REACT_APP_REDIS_URL,
+        password_server:process.env.REDIS_PASSWORD,
+        url_server:process.env.REDIS_URL
     }
 }
 

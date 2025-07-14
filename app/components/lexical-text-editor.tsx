@@ -19,7 +19,7 @@ interface ComponentProps{
     disable:boolean;
     value:string[];
     //on_blur?:(value:any)=>void;
-    //editor:LexicalEditor
+    //editor:LexicalEditor 
 }
 
 export const ToolbarPlugin:React.FC<ComponentProps> = ({on_change,disable,value})=>{

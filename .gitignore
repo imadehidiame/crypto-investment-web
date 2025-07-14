@@ -29,6 +29,8 @@ logs/
 # production
 /build
 
+dump.rdb
+
 tasks.txt
 test.js
 

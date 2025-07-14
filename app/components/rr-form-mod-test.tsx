@@ -8,7 +8,7 @@ import { forwardRef, useEffect,useState,type ReactNode } from "react";
 import { FormProvider, useForm, type FieldValues, type Path } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormCheckboxComponentMod, FormFieldComponent, FormFileUploaderMod, FormFileUploaderModMultiple, FormNumberComponent, FormRichTextComponent, FormSelectComponent, FormTextareaComponent } from "./form-components"; // Adjust imports as needed
+import { FormCheckboxComponentMod, FormFieldComponent, FormFileUploaderMod, FormFileUploaderModMultiple, FormNumberComponent, FormRichTextComponent, FormSelectComponent, FormTextareaComponent } from "./form-components"; 
 import { Toasting } from "./loader/loading-anime";
 import { log } from "@/lib/utils";
 
@@ -138,19 +138,11 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
         {}
       );
       let result = redefine?.(f_values);
-      //if(refine){
-        //result = refine(f_values);
-        //result
-      //};
       return redefine 
         ? baseSchema.refine((data) => {
           let res = redefine(data)
 
             return res.valid
-            /*if (typeof result === 'boolean') {
-              return result ? {} : { message: "Form-level validation failed" };
-            }
-            return result?.valid ? {} : { message: result?.error, path: result?.path };*/
             
           },
           {message:redefine?.(f_values).error,path:[result?.path as string]}
@@ -171,31 +163,10 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
       const new_schema = z.object(form_components_mod.reduce((acc, { name, validation }) => ({ ...acc, [name!]: validation }), {}));
       const f_values = form_components_mod.reduce((prev,{name,value})=>({...prev,[name!]:value !== undefined ? value : ''}),{});
       const res = redefine?.(f_values);
-      //log(res,'Form Change');
-      //form.setError(`root.${res?.path}`,{message:res?.error});
-      //console.log({res});
-      //console.log('Form change')
-      
       const refined_schema = redefine 
         ? new_schema.refine((data) => {
-            const {valid,error} = redefine?.(data);
-            //form.setError(`root.${res?.path}`,{message:error});
-            //if(!valid)
-              //form.setError(`root.${res?.path}`,{message:error});
-            //if(valid)
-            //  form.control._setErrors({[res?.path as string]:''});
-            //form.setError(`root.${res?.path}`,{message:error});
-            //else{
-              //form.control._setErrors({[res?.path as string]:error});
-              //form.setError(`root.${res?.path}`,{message:error});
-            //}
+            const {valid} = redefine?.(data);
             return valid;
-            /*const result = refine(data); 
-            if (typeof result === 'boolean') { 
-              return result ? {} : { message: "Form-level validation failed" };
-            } 
-            return result.valid ? {} : { message: result.error, path: result.path };*/
-            
           },{message:redefine?.(f_values).error,path:[res?.path as string]})
         : new_schema;
       set_schema(refined_schema);
@@ -204,8 +175,7 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
         { keepDirty: true, keepErrors: true, keepIsSubmitted: true, keepTouched: true }
       );
       form.control._options.resolver = zodResolver(refined_schema);
-      //if(redefine)
-        //form.setError(`root.${res?.path}`,{message:res?.error});
+      
     }, [form_components, redefine, form]);
 
     function pick(elements: FormElement<FieldValues>[]) {
@@ -247,27 +217,10 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
       }
     }, [navigation.state, loadAnimation, hideAnimation]);
 
-    // Handle action data and refine errors
-    /*useEffect(() => {
-      if (navigation.state === "idle" && actionData) {
-        const { errors, error, data, message, logged } = actionData.data;
-        console.log({ errors, error, data, message, logged });
-        if ((!errors && !error) || (logged && logged === true)) {
-          afterSubmitAction?.(message, data); 
-        } else {
-          if (errors && validateValues) {
-            validateValues.forEach((key) => {
-              if (errors[key]) {
-                form.setError(key as any, { message: errors[key][0] });
-              }
-            });
-          }
-          if (error) {
-            notify ? notify(error) : Toasting.error(error, 10000);
-          }
-        }
-      }
-    }, [navigation.state, actionData, validateValues, notify, afterSubmitAction, form]);*/
+    /**
+     { "error": { "message": "Network Error", "name": "AxiosError", "config": { "transitional": { "silentJSONParsing": true, "forcedJSONParsing": true, "clarifyTimeoutError": false }, "adapter": [ "xhr", "http", "fetch" ], "transformRequest": [ null ], "transformResponse": [ null ], "timeout": 0, "xsrfCookieName": "XSRF-TOKEN", "xsrfHeaderName": "X-XSRF-TOKEN", "maxContentLength": -1, "maxBodyLength": -1, "env": {}, "headers": { "Accept": "application/json;charset=utf-8", "Content-Type": "application/json", "Strict-Transport-Security": "max-age=7776000; includeSubDomains", "X-XSS-Protection": "1; mode=block", "X-Content-Type-Options": "nosniff" }, "params": { "chatbot_label": "vps", "use_helpdesk": false }, "method": "get", "url": "https://message-hub.hostinger.com/api/v1/chat/history", "allowAbsoluteUrls": true, "withCredentials": true }, "code": "ERR_NETWORK" } }
+{ "error": { "message": "Network Error", "name": "AxiosError", "config": { "transitional": { "silentJ
+     */
 
     useEffect(() => {
       if (navigation.state === "idle" && actionData) {
@@ -303,16 +256,20 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
         <Form
           ref={ref}
           {...formProps}
-          onSubmit={form.handleSubmit(handleFormSubmission)}
+          onSubmit={(e)=>{
+            //if(form.getFieldState())
+            console.log(form.formState.errors.root?.message);
+            form.handleSubmit(handleFormSubmission)
+          }}
           className={className}
         >
-          {form_components.map((element) => {
-            const { id, name, placeholder, type, label, classNames, size_limit, file_count, selects, checks, component, field_classnames, label_classnames, flag, value } = element;
+          {form_components.map(({ id, name, placeholder, type, label, classNames, size_limit, file_count, selects, checks, component, field_classnames, label_classnames, flag }) => {
+            //const { id, name, placeholder, type, label, classNames, size_limit, file_count, selects, checks, component, field_classnames, label_classnames, flag, value } = element;
             let ret_value;
             if (type === 'text' || type === 'password')
               ret_value = (
                 <FormFieldComponent
-                  key={element.name as string}
+                  key={name as string}
                   form={form}
                   field_classnames={field_classnames}
                   label={label}
@@ -328,68 +285,79 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
                     //console.log({ value });
                     //console.log(element.name);
                     //set_form_state?.(prev=>prev)
+                    if(set_form_elements)
                     set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
-                    //on_change?.(element.name!, value);
+                     else
+                    on_change?.(name!, value);
                   }}
                 />
               );
             else if (type === 'textarea')
               ret_value = (
                 <FormTextareaComponent
-                  key={element.name as string}
+                  key={name as string}
                   form={form}
                   field_classnames={field_classnames}
                   className={classNames}
                   label={label}
-                  name={element.name as Path<z.infer<typeof schema>>}
-                  placeholder={element.placeholder}
-                  id={element.id ? element.id : element.name as string}
+                  name={name as Path<z.infer<typeof schema>>}
+                  placeholder={placeholder}
+                  id={id ? id : name as string}
                   on_change={(value) => {
-                    console.log('Text area');
-                    console.log({ value });
-                    console.log(element.name);
-                    on_change?.(element.name!, value);
-                    set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                    //console.log('Text area');
+                    //console.log({ value });
+                    //console.log(element.name);
+                    if(set_form_elements)
+                      set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                       else
+                      on_change?.(name!, value);
+                    //set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
                   }}
                 />
               );
             else if (type === 'component')
-              ret_value = (<span key={element.name as string}>{component}</span>);
+              ret_value = (<span key={name as string}>{component}</span>);
             else if (type === 'multiple_file')
               ret_value = (
                 <FormFileUploaderModMultiple
-                  key={element.name as string}
+                  key={name as string}
                   form={form}
                   className={classNames}
-                  name={element.name as Path<z.infer<typeof schema>>}
-                  placeholder={element.placeholder}
-                  id={element.id ? element.id : element.name as string}
+                  name={name as Path<z.infer<typeof schema>>}
+                  placeholder={placeholder}
+                  id={id ? id : name as string}
                   label={label}
                   size_limit={size_limit}
                   file_count={file_count}
                   is_multiple={true}
                   on_change={(value) => {
                     console.log('Multiple file');
-                    set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                    if(set_form_elements)
+                      set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                       else
+                      on_change?.(name!, value);
                   }}
                 />
               );
             else if (type === 'rich_text')
               ret_value = (
                 <FormRichTextComponent
-                  key={element.name as string}
+                  key={name as string}
                   form={form}
                   disabled={true}
                   className={classNames}
                   field_classnames={field_classnames}
-                  name={element.name as Path<z.infer<typeof schema>>}
-                  placeholder={element.placeholder}
+                  name={name as Path<z.infer<typeof schema>>}
+                  placeholder={placeholder}
                   label={label}
                   label_classname={label_classnames}
                   on_change={(value) => {
-                    log(value, 'Rich text value');
-                    //on_change?.(element.name!, value);
-                    set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                    //log(value, 'Rich text value');
+                    //on_change?.(element.name!, value);'
+                    if(set_form_elements)
+                      set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                       else
+                      on_change?.(name!, value);
                   }}
                 />
               );
@@ -397,19 +365,22 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
               ret_value = (
                 <FormNumberComponent
                   is_integer={false}
-                  key={element.name as string}
+                  key={name as string}
                   form={form}
                   className={classNames}
                   flag={flag}
                   field_classnames={field_classnames}
-                  name={element.name as Path<z.infer<typeof schema>>}
-                  placeholder={element.placeholder}
+                  name={name as Path<z.infer<typeof schema>>}
+                  placeholder={placeholder}
                   label={label}
                   label_classname={label_classnames}
                   on_change={(value) => {
-                    log(value, 'Number value float');
+                    //log(value, 'Number value float');
                     //on_change?.(element.name!, value);
-                    set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                    if(set_form_elements)
+                      set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                       else
+                      on_change?.(name!, value);
                   }}
                 />
               );
@@ -418,17 +389,20 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
                 <FormNumberComponent
                   is_integer={true}
                   flag={flag}
-                  key={element.name as string}
+                  key={name as string}
                   form={form}
                   className={classNames}
                   field_classnames={field_classnames}
-                  name={element.name as Path<z.infer<typeof schema>>}
-                  placeholder={element.placeholder}
+                  name={name as Path<z.infer<typeof schema>>}
+                  placeholder={placeholder}
                   label={label}
                   label_classname={label_classnames}
                   on_change={(value) => {
-                    log(value, 'Number value integer');
-                    set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                    //log(value, 'Number value integer');
+                    if(set_form_elements)
+                      set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                       else
+                      on_change?.(name!, value);
                     //on_change?.(element.name!, value);
                   }}
                 />
@@ -436,53 +410,62 @@ export const RRFormDynamic = forwardRef<HTMLFormElement, CustomFormProps<any>>(
             else if (type === 'select')
               ret_value = (
                 <FormSelectComponent
-                  key={element.name as string}
+                  key={name as string}
                   form={form}
                   field_classnames={field_classnames}
                   className={classNames}
                   selects={selects!}
                   label={label}
-                  name={element.name as Path<z.infer<typeof schema>>}
-                  placeholder={element.placeholder}
+                  name={name as Path<z.infer<typeof schema>>}
+                  placeholder={placeholder}
                   on_change={(value) => {
-                    console.log('Select');
-                    console.log({ value });
-                    console.log(element.name);
+                    //console.log('Select');
+                    //console.log({ value });
+                    //console.log(name);
                     //on_change?.(element.name!, value);
-                    set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                    if(set_form_elements)
+                      set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                       else
+                      on_change?.(name!, value);
                   }}
                 />
               );
             else if (type === 'checkbox')
               ret_value = (
                 <FormCheckboxComponentMod
-                  key={element.name as string}
+                  key={name as string}
                   form={form}
                   className={classNames}
                   checks={checks!}
                   label={label}
-                  name={element.name as Path<z.infer<typeof schema>>}
+                  name={name as Path<z.infer<typeof schema>>}
                   on_change={(value) => {
-                    console.log('check box');
-                    console.log({ value });
-                    console.log(element.name);
-                    on_change?.(element.name!, value);
+                    //console.log('check box');
+                    //console.log({ value });
+                    //console.log(element.name);
+                    if(set_form_elements)
+                      set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                       else
+                      on_change?.(name!, value);
                   }}
                 />
               );
             else
               ret_value = (
                 <FormFileUploaderMod
-                  key={element.name as string}
+                  key={name as string}
                   form={form}
                   className={classNames}
-                  name={element.name as Path<z.infer<typeof schema>>}
-                  placeholder={element.placeholder}
-                  id={element.id ? element.id : element.name as string}
+                  name={name as Path<z.infer<typeof schema>>}
+                  placeholder={placeholder}
+                  id={id ? id : name as string}
                   label={label}
                   size_limit={size_limit}
                   on_change={(value) => {
-                    on_change?.(element.name!, value);
+                    if(set_form_elements)
+                      set_form_elements?.(prev=>prev.map(e=>e.name && e.name === name ? {...e,value}:e))
+                       else
+                      on_change?.(name!, value);
                   }}
                 />
               );

@@ -38,7 +38,7 @@ export const action = async ({request,params,context}:Route.ActionArgs)=>{
         userId,
         pending:-1,
         deposit
-      });
+      }); 
 
       await Activity.insertOne({
         userId,

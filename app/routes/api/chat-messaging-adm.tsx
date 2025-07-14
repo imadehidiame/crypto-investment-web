@@ -8,8 +8,9 @@ import { getSess } from "@/layouts/app-layout";
 import Message from "@/models/Message.server";
 import mongoose from "mongoose";
 import { log } from "@/lib/utils";
-import type { Route } from "./+types/chat-messaging";
+//import type { Route } from "./+types/chat-messaging";
 import { publish_message, type MessageThread } from "@/utils/redis.chat";
+import type { Route } from "./+types/chat-messaging-adm";
 //import type { Route } from "./+types/settings-update";
 //import type { Route } from "./+types/settings-update";
 
@@ -19,7 +20,7 @@ export const action = async ({request,context}:Route.ActionArgs)=>{
     //console.log(await request.json());
     const user = getSess(context);
     //console.log({user});
-    //console.log(user);
+    console.log(user);
     if(!user?.isAuthenticated){
         return new Response(null,{status:403,statusText:'Access to request denied as a result of an invalid request first'})
     }
@@ -48,7 +49,22 @@ export const action = async ({request,context}:Route.ActionArgs)=>{
                 const date = new Date(typeof form_data.date === 'string' ? parseInt(form_data.date) : form_data.date)
                 const flag = form_data.flag;
                 const is_user:boolean = form_data.is_user;
-                if(flag === 'new'){
+                if(flag == 'close_chat'){
+                    await Message.findByIdAndDelete(new mongoose.Types.ObjectId(form_data.id as string));
+                    const channel = `livechat:${form_data.user_id}`;
+                    const admin_channel = `livechat:system`;
+                    await publish_message(channel,{
+                        id:form_data.id,
+                        close:true
+                    });
+                    await publish_message(admin_channel,{
+                        id:form_data.id,
+                        close:true
+                    });
+
+                //log(message,'Sent edited Message');
+                return Response.json({data:{data:{},logged:true}},{headers:{'Content-Type':'application/json'}});
+                }else if(flag === 'new'){
 
                     const message = await Message.create({
                         userId:new mongoose.Types.ObjectId(user.user?._id),
@@ -133,7 +149,7 @@ export const action = async ({request,context}:Route.ActionArgs)=>{
                         }
                         ]
                     }
-                    console.log({message_data});
+                    //console.log({message_data});
                     await publish_message(channel,message_data);
 
                 //log(message,'Sent edited Message');

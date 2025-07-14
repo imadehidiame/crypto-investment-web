@@ -16,7 +16,7 @@ export const action = async ({request}:Route.ActionArgs)=>{
   const {logged,message,session,role} = await login(validate.data);
   if(!logged){
     return {data:{logged:false,error:message}};
-  } 
+  }  
 
   return role === 'admin' ? redirect('/dashboard/adm',{headers:{'Set-Cookie':session as string}}) : redirect('/dashboard',{headers:{'Set-Cookie':session as string}}) ;
 

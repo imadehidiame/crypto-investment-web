@@ -181,6 +181,18 @@ export default function DashboardLayout({ loaderData }: Route.ComponentProps) {
               <MessageSquare className="w-5 h-5 mr-2" />
               Inbox
             </NavLink>
+
+            {/*<NavLink
+              to="/dashboard/chat-test"
+              onClick={toggleSidebar}
+              className={({ isActive }) =>
+                `flex items-center p-2 rounded-lg ${isActive ? 'bg-amber-300 text-black' : 'text-gray-300 hover:bg-gray-800'}`
+              }
+            >
+              <MessageSquare className="w-5 h-5 mr-2" />
+              Chat
+            </NavLink>*/}
+
           </nav>
             :
             <nav className="mt-[-4px] px-4">
@@ -215,7 +227,27 @@ export default function DashboardLayout({ loaderData }: Route.ComponentProps) {
                 <User className="w-5 h-5 mr-2" />
                 Deposit
               </NavLink>
+              <NavLink
+                to="/dashboard/adm/messaging"
+                onClick={toggleSidebar}
+                className={({ isActive }) =>
+                  `flex items-center p-2 rounded-lg ${isActive ? 'bg-amber-300 text-black' : 'text-gray-300 hover:bg-gray-800'}`
+                }
+              >
+                <User className="w-5 h-5 mr-2" />
+                Messaging
+              </NavLink>
               {/*<NavLink
+                to="/dashboard/adm/chat-test-adm"
+                onClick={toggleSidebar}
+                className={({ isActive }) =>
+                  `flex items-center p-2 rounded-lg ${isActive ? 'bg-amber-300 text-black' : 'text-gray-300 hover:bg-gray-800'}`
+                }
+              >
+                <User className="w-5 h-5 mr-2" />
+                Chat
+              </NavLink>
+              <NavLink
               to="/dashboard/subscribe"
               className={({ isActive }) =>
                 `flex items-center p-2 rounded-lg ${isActive ? 'bg-amber-300 text-black' : 'text-gray-300 hover:bg-gray-800'}`

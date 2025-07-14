@@ -11,7 +11,7 @@ import { Toasting } from '@/components/loader/loading-anime';
 import { Loader2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { NumberFormat } from '@/components/number-field';
-import { extract_date_time, fetch_request_mod, generateSecureRandomString, log } from '@/lib/utils';
+import { extract_date_time, extract_date_time_mod, fetch_request_mod, generateSecureRandomString, log } from '@/lib/utils';
 import { CURRENCIES } from '@/lib/config/crypt_api';
 import { FormNumberDefault, FormSelectDefault, FormTextFieldDefault } from '@/components/form-components';
 
@@ -472,7 +472,7 @@ set_address(address_in as string);
                     <TableBody>
                       {deposit_state.map((tx) => (
                         <TableRow key={tx._id} className="border-gray-800 hover:bg-gray-700">
-                          <TableCell className="text-sm">{/*extract_date_time(tx.createdAt,false)*/tx.createdAt.toDateString()}</TableCell>
+                          <TableCell className="text-sm">{extract_date_time_mod(tx.createdAt,false)}</TableCell>
                           <TableCell
                             className={`text-sm ${(tx.deposit) < 0 ? 'text-red-400' : 'text-green-400'}`}
                           >
@@ -498,7 +498,7 @@ set_address(address_in as string);
                               {tx.status === -1 ? 'Awaiting Payment' : tx.status === 0 ? 'Awaiting Confirmation' : 'Payment Confirmed' }
                             </span>
                           </TableCell>
-                          <TableCell className="text-sm">{/*extract_date_time(tx.updatedAt,false)*/tx.updatedAt.toDateString()}</TableCell>
+                          <TableCell className="text-sm">{extract_date_time_mod(tx.updatedAt,false)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -511,7 +511,7 @@ set_address(address_in as string);
                       <div className="space-y-2">
                         <div className="flex justify-between">
                           <span className="text-gray-400 text-sm">Date</span>
-                          <span className="text-white text-sm">{ /*extract_date_time(tx.createdAt,false)*/tx.createdAt.toDateString()}</span>
+                          <span className="text-white text-sm">{ extract_date_time_mod(tx.createdAt,false)}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400 text-sm">Amount</span>
@@ -552,7 +552,7 @@ set_address(address_in as string);
 
                         <div className="flex justify-between">
                           <span className="text-gray-400 text-sm">Last Update</span>
-                          <span className="text-white text-sm">{ /*extract_date_time(tx.createdAt,false)*/tx.updatedAt.toDateString()}</span>
+                          <span className="text-white text-sm">{ extract_date_time_mod(tx.createdAt,false)}</span>
                         </div>
 
                       </div>
