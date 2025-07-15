@@ -12,9 +12,6 @@ export function websocket_chat(): Plugin {
               : (viteServer.httpServer as HttpServer) || createServer();
               console.log(`Node environment ${process.env.NODE_ENV}`);
               console.log(`is production = ${isProduction}`);
-          //const httpServer: HttpServer = viteServer.httpServer
-            ///? (viteServer.httpServer as HttpServer)
-            //: createServer();
           const wss = new WebSocketServer({ server: httpServer });
           const clients = new Map<string, WebSocket>();
         wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
@@ -39,7 +36,7 @@ export function websocket_chat(): Plugin {
             }
             console.log('Url is '+req.url);
             console.log(`Request host header = ${req.headers.host}`)
-            const url = new URL(req.url, `http://${req.headers.host || "localhost:4003"}`);
+            const url = new URL(req.url, `http://${req.headers.host || "localhost:4004"}`);
             console.log(url);
             const userId = url.searchParams.get("userId");
             const flag = url.searchParams.get('flag');
@@ -66,11 +63,12 @@ export function websocket_chat(): Plugin {
         wss.on("error", (error) => console.error("WebSocketServer error:", error));
         if (!viteServer.httpServer || isProduction) {
             return () => {
-              httpServer.listen(4003, "0.0.0.0", () => {
-                console.log(`WebSocket server running on ws://0.0.0.0:4003`);
+              httpServer.listen(4004, "0.0.0.0", () => {
+                console.log(`WebSocket server running on ws://0.0.0.0:4004`);
               });
             };
           }
         },
       };
 }
+
