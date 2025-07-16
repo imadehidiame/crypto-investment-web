@@ -4,17 +4,24 @@ import { createServer, Server as HttpServer, type IncomingMessage } from 'http';
 import { subscribe_to_channel, type MessageThread } from './app/utils/redis.chat';
 export function websocket_chat(): Plugin {
     return {
+
         name: "websocket-chat",
         configureServer(viteServer) {
+            console.log(process.env.NODE_ENV);
             const isProduction = process.env.NODE_ENV === "production";
             const httpServer: HttpServer = isProduction
               ? createServer()
               : (viteServer.httpServer as HttpServer) || createServer();
               console.log(`Node environment ${process.env.NODE_ENV}`);
               console.log(`is production = ${isProduction}`);
+              //console.log('Address info');
+              //console.log(httpServer.address())
+              //console.log(httpServer.connections);
+              //console.log(httpServer);
+              
           const wss = new WebSocketServer({ server: httpServer });
           const clients = new Map<string, WebSocket>();
-        wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
+          wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
 
             /*console.log("WebSocket connection request:", {
                 url: req.url,
@@ -36,7 +43,7 @@ export function websocket_chat(): Plugin {
             }
             console.log('Url is '+req.url);
             console.log(`Request host header = ${req.headers.host}`)
-            const url = new URL(req.url, `http://${req.headers.host || "localhost:4004"}`);
+            const url = new URL(req.url, `http://${req.headers.host || isProduction ? process.env.APP_HOST : "http://localhost:4003"}`);
             console.log(url);
             const userId = url.searchParams.get("userId");
             const flag = url.searchParams.get('flag');
@@ -61,10 +68,13 @@ export function websocket_chat(): Plugin {
             ws.on("error", (error) => console.error(`WebSocket error for ${userId}:`, error));
           });
         wss.on("error", (error) => console.error("WebSocketServer error:", error));
+        console.log('Vite httpserver');
+        console.log(viteServer.httpServer);
         if (!viteServer.httpServer || isProduction) {
+            console.log('Now creating server')
             return () => {
-              httpServer.listen(4004, "0.0.0.0", () => {
-                console.log(`WebSocket server running on ws://0.0.0.0:4004`);
+              httpServer.listen(4003, "0.0.0.0", () => {
+                console.log(`WebSocket server running on ws://0.0.0.0:4003`);
               });
             };
           }
