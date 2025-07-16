@@ -98,7 +98,7 @@ const MessagingPageUser: React.FC<PageProps> = ({ messageThreads, user }) => {
     //const is_localhost = location.host.includes('localhost:') && location.hostname === 'localhost';
     const is_secure = location.protocol === 'https:';
     const { host } = location;
-    const ws = new WebSocket(is_secure ? `wss://${host}/ws/?userId=${user}` : `ws://${host}?userId=${user}`);
+    const ws = new WebSocket(is_secure ? `wss://${host}/ws/?userId=${user}` : `ws://${host}/ws/?userId=${user}`);
     ws.onmessage = (message)=>{
         const message_data:MessageThread|CloseChat = JSON.parse(message.data);
         if(is_close_chat(message_data)){

@@ -3,26 +3,19 @@ import { WebSocketServer, WebSocket } from 'ws';
 import { createServer, Server as HttpServer, type IncomingMessage } from 'http';
 import { Socket } from 'net';
 import { subscribe_to_channel, type MessageThread } from './app/utils/redis.chat';
-export function websocket_chat(): Plugin {
+export function wb_chat(): Plugin {
+    
     return {
 
-        name: "websocket-chat",
+        name: "wb-chat",
         configureServer(viteServer) {
-            console.log(process.env.NODE_ENV);
             const isProduction = process.env.NODE_ENV === "production";
             const httpServer: HttpServer = isProduction
               ? createServer()
               : (viteServer.httpServer as HttpServer) || createServer();
-              console.log(`Node environment ${process.env.NODE_ENV}`);
-              console.log(`is production = ${isProduction}`);
-              //console.log('Address info');
-              //console.log(httpServer.address())
-              //console.log(httpServer.connections);
-              //console.log(httpServer);
-              
-          const wss = new WebSocketServer({ server: httpServer });
-          const clients = new Map<string, WebSocket>();
-          wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
+            let ws_server = new WebSocketServer({noServer:true});
+            const clients = new Map<string, WebSocket>();
+            ws_server.on("connection", (ws: WebSocket, req: IncomingMessage) => {
 
             /*console.log("WebSocket connection request:", {
                 url: req.url,
@@ -68,13 +61,20 @@ export function websocket_chat(): Plugin {
             });
             ws.on("error", (error) => console.error(`WebSocket error for ${userId}:`, error));
           });
-        wss.on("error", (error) => console.error("WebSocketServer error:", error));
-        console.log('Vite httpserver');
-        console.log(viteServer.httpServer);
-        if (!viteServer.httpServer || isProduction) {
+        ws_server.on("error", (error) => console.error("WebSocketServer error:", error));
+        httpServer?.on('upgrade',(req:IncomingMessage,socket:Socket,head:Buffer)=>{
+                if(req.url?.startsWith('/ws')){
+                    console.log('Found a connection');
+                    ws_server.handleUpgrade(req,socket,head,(ws,req)=>{
+                        ws_server.emit('connection',ws,req);
+                    })    
+                }
+            });
+            
+        if (isProduction) {
             console.log('Now creating server')
             return () => {
-              httpServer.listen(4003, "0.0.0.0", () => {
+              httpServer?.listen(4003, "0.0.0.0", () => {
                 console.log(`WebSocket server running on ws://0.0.0.0:4003`);
               });
             };
