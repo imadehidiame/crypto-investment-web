@@ -113,7 +113,9 @@ const MessagingPageAdm: React.FC<PageProps> = ({ messageThreads, user,users_data
     //console.log({env_value:sessionEnv.Redis.password});
     const is_secure = location.protocol === 'https:';
     const { host } = location;
-    const ws = new WebSocket(is_secure ? `wss://${host}/ws/?userId=system` : `ws://${host}/ws/?userId=system`);
+    const localhost = 'localhost:4005';
+    const ws_server = 'livechat';
+    const ws = new WebSocket(is_secure ? `wss://${ws_server}.${host}/ws/?userId=system` : `ws://${localhost}/ws/?userId=system`);
     //const ws = new WebSocket(`ws://localhost:4003?userId=system`);
     ws.onmessage = (message)=>{
         const message_data:MessageThread|CloseChat = JSON.parse(message.data);

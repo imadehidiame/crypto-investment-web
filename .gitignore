@@ -29,6 +29,15 @@ logs/
 # production
 /build
 
+/app/entry.client.tsx
+/app/entry.server.tsx
+
+serve.js
+server-app.js
+s.js
+
+/server
+
 dump.rdb
 
 tasks.txt

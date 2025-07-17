@@ -20,7 +20,7 @@ export const action = async ({request,context}:Route.ActionArgs)=>{
     //console.log(await request.json());
     const user = getSess(context);
     //console.log({user});
-    console.log(user);
+    //console.log(user);
     if(!user?.isAuthenticated){
         return new Response(null,{status:403,statusText:'Access to request denied as a result of an invalid request first'})
     }

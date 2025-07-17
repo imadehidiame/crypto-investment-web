@@ -133,7 +133,7 @@ export const action = async ({request,context}:Route.ActionArgs)=>{
                         }
                         ]
                     }
-                    console.log({message_data});
+                    //console.log({message_data});
                     await publish_message(channel,message_data);
 
                 //log(message,'Sent edited Message');

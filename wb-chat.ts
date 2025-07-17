@@ -74,7 +74,7 @@ export function wb_chat(): Plugin {
         if (isProduction) {
             console.log('Now creating server')
             return () => {
-              httpServer?.listen(4003, "0.0.0.0", () => {
+              httpServer?.listen(3000, "0.0.0.0", () => {
                 console.log(`WebSocket server running on ws://0.0.0.0:4003`);
               });
             };
