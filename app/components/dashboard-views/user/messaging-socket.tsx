@@ -110,7 +110,7 @@ const MessagingPageUser: React.FC<PageProps> = ({ messageThreads, user }) => {
             if(ws.readyState === WebSocket.OPEN){
                 ws.send(JSON.stringify({type:'ping',user}));
             }
-        },10000);
+        },60000);
     }
 
     ws.onmessage = (message)=>{

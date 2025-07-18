@@ -139,7 +139,7 @@ const clients = new Map();
             ws.isAlive = false;
             ws.ping();
           })
-        },10000);
+        },60000);
 
         server?.on('upgrade',(req,socket,head)=>{
                         if(req.url?.startsWith('/ws')){

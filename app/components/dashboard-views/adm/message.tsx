@@ -123,7 +123,7 @@ const MessagingPageAdm: React.FC<PageProps> = ({ messageThreads, user,users_data
         if(ws.readyState === WebSocket.OPEN){
             ws_message = setInterval(()=>{
                 ws.send(JSON.stringify({type:'ping',user:'System'}));
-            },10000);
+            },60000);
         }
     }
 
