@@ -101,6 +101,18 @@ const MessagingPageUser: React.FC<PageProps> = ({ messageThreads, user }) => {
     const localhost = 'localhost:4005';
     const ws_server = 'livechat';
     const ws = new WebSocket(is_secure ? `wss://${ws_server}.${host}/ws/?userId=${user}` : `ws://${localhost}/ws/?userId=${user}`);
+    let server_message:NodeJS.Timeout;
+    
+
+    ws.onopen = ()=>{
+        server_message = setInterval(()=>{
+            //console.log('Pushing');
+            if(ws.readyState === WebSocket.OPEN){
+                ws.send(JSON.stringify({type:'ping',user}));
+            }
+        },10000);
+    }
+
     ws.onmessage = (message)=>{
         const message_data:MessageThread|CloseChat = JSON.parse(message.data);
         if(is_close_chat(message_data)){
@@ -136,6 +148,7 @@ const MessagingPageUser: React.FC<PageProps> = ({ messageThreads, user }) => {
         }
         return ()=>{
             ws.close(1000,'Component unmounted');
+            clearInterval(server_message);
         }
   },[]);
 

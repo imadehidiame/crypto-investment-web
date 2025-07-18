@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import * as z from 'zod';
 import SectionWrapper from '@/components/shared/section-wrapper';
 import { useNavigate, useNavigation, useSubmit } from 'react-router';
-import { get_form_data, RRFormDynamic } from '@/components/rr-form-mod-test';
+import { GenerateFormdata, RRFormDynamic } from '@/components/rr-form-mod-test';
 import { Toasting } from '@/components/loader/loading-anime';
 //import { log } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
@@ -23,6 +23,7 @@ const LoginPage: React.FC = () => {
   const loading = navigation.state === 'submitting';
   const [search,set_search] = useState<string|null>('');
   useEffect(()=>{
+    //console.log(new URLSearchParams(location.search).get('no_route'));
     set_search(new URLSearchParams(location.search).get('no_route'))
   },[]);
   
@@ -30,13 +31,16 @@ const LoginPage: React.FC = () => {
   const { username,password } = loginSchema.shape;
 
   const form_data = [
-    get_form_data('text','username','',username,'Email Address','Email Address',undefined,undefined,undefined,undefined,'w-full','border-amber-300 text-white focus:border-amber-300'),
-    get_form_data('password','password','',password,'Password','Password',undefined,undefined,undefined,undefined,'w-full','border-amber-300 text-white focus:border-amber-300')
+    (new GenerateFormdata).set_classnames('w-full').set_field_classnames('w-full border-amber-300 text-white focus:border-amber-300').set_label('Email Address').set_label_classnames('text-amber-300 mb-4').set_name('username').set_disabled(loading).set_id('username').set_placeholder('Email address').set_validation(username).set_value('').build(),
+    (new GenerateFormdata).set_classnames('w-full').set_disabled(loading).set_field_classnames('w-full border-amber-300 text-white focus:border-amber-300').set_id('password').set_label('Password').set_label_classnames('text-amber-300 mb-4').set_name('password').set_placeholder('Password').set_type('password').set_validation(password).set_value('').build(),
+    /*get_form_data('text','username','',username,'Email Address','Email Address',undefined,undefined,undefined,undefined,'w-full','border-amber-300 text-white focus:border-amber-300'),
+    get_form_data('password','password','',password,'Password','Password',undefined,undefined,undefined,undefined,'w-full','border-amber-300 text-white focus:border-amber-300')*/
   ];
 
   const [form_state,set_form_state] = useState(form_data);
   
   const on_submit = async (form_values:any)=>{
+    //console.log(form_values);
     submit(form_values,{
       action:'/auth'+search ? '?no_route=1' : '',
       encType:'application/json',
@@ -62,10 +66,11 @@ const LoginPage: React.FC = () => {
               afterSubmitAction={()=>{
 
               }}
+              set_form_elements={set_form_state}
               submitForm={on_submit}
-              on_change={(on_update,value)=>{
-                set_form_state(prev=>prev.map(form=>(form.name === on_update ? {...form,value} : form)));
-              }}
+              //on_change={(on_update,value)=>{
+                //set_form_state(prev=>prev.map(form=>(form.name === on_update ? {...form,value} : form)));
+              //}}
               className="space-y-4 p-0 md:p-0 flex flex-wrap gap-4 items-center justify-between"
               notify={(notify)=>{
                 Toasting.error(notify,10000);
@@ -92,7 +97,7 @@ const LoginPage: React.FC = () => {
                   Don't have an account?{' '}
                   <button onClick={() => navigate('/auth/signup')} className="text-gold-500 hover:underline focus:outline-none">
                     Sign Up
-                  </button>
+                  </button> 
                 </p>
               
             </div>

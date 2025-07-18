@@ -14,7 +14,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { get_form_data, RRFormDynamic, type FormElement, type FormElementDefault } from '@/components/rr-form-mod-test';
+import { get_form_data, RRFormDynamic } from '@/components/rr-form-mod-test';
 import { Toasting } from '@/components/loader/loading-anime';
 import SwitchComponent from '@/components/switch-component';
 import { log } from '@/lib/utils';

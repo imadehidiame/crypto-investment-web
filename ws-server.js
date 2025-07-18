@@ -105,6 +105,23 @@ const clients = new Map();
                 ws.send(JSON.stringify(message));
               }
             }).catch((error) => console.error(`Error subscribing to channel ${channel}:`, error));
+
+            ws.isAlive = true;
+
+            ws.on('pong',()=>{
+              console.log('Pong activated');
+              ws.isAlive = true;
+            });
+
+            ws.on('message',(data)=>{
+                console.log(`Data from client`);
+                //data.
+                //console.log(data.toJSON());
+                //console.log(data.toLocaleString());
+                //console.log(data.toString());
+                console.log(JSON.parse(data));
+            });
+
             ws.on("close", (code, reason) => {
               clients.delete(userId);
               console.log(`Client ${userId} disconnected with code ${code}, reason: ${reason.toString()}`);
@@ -112,6 +129,17 @@ const clients = new Map();
             ws.on("error", (error) => console.error(`WebSocket error for ${userId}:`, error));
           });
         ws_server.on("error", (error) => console.error("WebSocketServer error:", error));
+
+        setInterval(()=>{
+          console.log('Keeping alive');
+          ws_server.clients.forEach((ws)=>{
+            console.log('Connection isAlive: '+ws.isAlive);
+            if(!ws.isAlive)
+              return ws.terminate();
+            ws.isAlive = false;
+            ws.ping();
+          })
+        },10000);
 
         server?.on('upgrade',(req,socket,head)=>{
                         if(req.url?.startsWith('/ws')){

@@ -1,4 +1,6 @@
-const AddImageSvg: React.FC = () => {
+import { cn } from "@/lib/utils"
+
+const AddImageSvg: React.FC<{svg_color?:string}> = ({svg_color}) => {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -10,7 +12,7 @@ const AddImageSvg: React.FC = () => {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="lucide lucide-image-plus" // Removed h-4 w-4 mr-2 from here.
+            className={cn("lucide lucide-image-plus",svg_color)}
         >
             <path d="M16 5h6"></path>
             <path d="M19 2v6"></path>
