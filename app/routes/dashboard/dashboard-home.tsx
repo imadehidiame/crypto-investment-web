@@ -8,6 +8,7 @@ import { get_earnings, log } from "@/lib/utils";
 import Activity from "@/models/Activity.server";
 import { NumberFormat } from "@/components/number-field";
 import Deposit from "@/models/Deposit.server";
+import AdmWithdrawal from "@/models/AdmWithdrawal.server";
 //import User, { type IUser } from "@/models/User.server";
 //import DashboardHome, { type RecentTransactionsData } from "@/components/dashboard-views/user/home";
 
@@ -63,8 +64,12 @@ let deposits  = (await Deposit.find({userId:context_data?.user?._id}).sort({date
   return acc+=amount;
 },0)
 
-//log(deposits,'Depositss');
+type AdmWithdraw = {amount:number};
 
+//log(deposits,'Depositss');
+let adm_withdrawals:number = (await AdmWithdrawal.find({userId:context_data?.user?._id})).reduce((prev:number,{amount}:AdmWithdraw)=>{
+  return prev+=amount
+},0)
 let recentTransactions  = await Activity.find({userId:context_data?.user?._id}).sort({date:-1})
     recentTransactions = recentTransactions.map(({_id,type,amount,status,description,date},i)=>({
         //log(e,'transaction');
@@ -127,6 +132,7 @@ let recentTransactions  = await Activity.find({userId:context_data?.user?._id}).
       });
       
       account_balance = Object.assign({},account_balance,{balance:((deposits as number)+account_balance.balance)});
+      account_balance = Object.assign({},account_balance,{balance:(account_balance.balance - adm_withdrawals)>=0 ? account_balance.balance - adm_withdrawals : 0 });
       
   //    log(account_balance,'Earning dates');
 

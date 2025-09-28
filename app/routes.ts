@@ -36,6 +36,7 @@ export default [
       route("dashboard/adm/profile", "routes/dashboard/adm/dashboard-profile-adm.tsx"),
       route("dashboard/adm/subscription-plans", "routes/dashboard/adm/dashboard-subscribe-adm.tsx"),
       route("dashboard/adm/deposits", "routes/dashboard/adm/dashboard-deposit-adm.tsx"),
+      route("dashboard/adm/adm-withdrawals", "routes/dashboard/adm/dashboard-adm-withdrawal-adm.tsx"),
       route("dashboard/adm/messaging", "routes/dashboard/adm/dashboard-messaging-adm.tsx"),
       route("dashboard/adm/chat-test-adm", "routes/dashboard/adm/dashboard-chat-test-adm.tsx"),
       route("dashboard/adm/transactions", "routes/dashboard/adm/dashboard-transaction-history-adm.tsx"),
@@ -51,6 +52,7 @@ export default [
     route("api/logout",'routes/api/logout.tsx'),
     route("api/profile",'routes/api/profile.tsx'),
     route("api/process-deposit",'routes/api/process-deposit.tsx'),
+    route("api/process-adm-withdrawal",'routes/api/process-adm-withdrawal.tsx'),
   ]),
   
   

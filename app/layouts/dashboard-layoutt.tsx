@@ -228,6 +228,16 @@ export default function DashboardLayout({ loaderData }: Route.ComponentProps) {
                 Deposit
               </NavLink>
               <NavLink
+                to="/dashboard/adm/adm-withdrawals"
+                onClick={toggleSidebar}
+                className={({ isActive }) =>
+                  `flex items-center p-2 rounded-lg ${isActive ? 'bg-amber-300 text-black' : 'text-gray-300 hover:bg-gray-800'}`
+                }
+              >
+                <User className="w-5 h-5 mr-2" />
+                Withdrawals
+              </NavLink>
+              <NavLink
                 to="/dashboard/adm/messaging"
                 onClick={toggleSidebar}
                 className={({ isActive }) =>
